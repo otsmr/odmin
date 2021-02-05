@@ -1,0 +1,34 @@
+{
+  "server": {
+    "port": 3000
+  },
+  "nodeEnv": "development | production",
+  "dev": {
+    "invitetoken": "token"
+  },
+  "email": {
+    "webmaster": "",
+    "account": "\"Name\" <info@email.de>"
+  },
+  "jsonwebtoken": {
+    "secret": ""
+  },
+  "webauthn": {
+    "jwt_secret": "",
+    "hostname": "localhost"
+  },
+  "mysql": {
+    "database": "",
+    "user": "",
+    "pass": "",
+    "host": "",
+    "port": 3306
+  },
+  "smtp": {
+    "host": "",
+    "port": "",
+    "secure": "",
+    "user": "",
+    "pass": ""
+  }
+}

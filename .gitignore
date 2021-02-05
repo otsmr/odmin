@@ -1,0 +1,12 @@
+node_modules/
+build/
+
+# Backend
+backend/logs/
+backend/database/
+backend/config.json
+backend/config.changed.json
+
+
+# Frontend
+frontend/src/react-app-env.d.ts

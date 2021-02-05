@@ -1,0 +1,40 @@
+
+.radio-group {
+
+    border: 1px solid var(--color-white-grey);
+    padding: 20px 20px 10px;
+    border-radius: 5px;
+    width: max-content;
+    min-width: 500px;
+    margin: 10px 0;
+
+    hr {
+        border: 0;
+        border-bottom: 1px solid var(--color-white-grey);
+        margin: 17px 0;
+    }
+
+    .radio-item {
+        margin-bottom: 10px;
+        .title {
+            font-size: 19px;
+        }
+        label {
+            font-size: 14px;
+        }
+        .radio-input {
+            display: flex;
+            align-items: center;
+
+            input {
+                margin: 7px;
+            }
+        }
+
+        .desc {
+            font-size: 13px;
+            color: #6F6F6F;
+        }
+    }
+
+}

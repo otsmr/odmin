@@ -1,0 +1,31 @@
+.twofa .qrcode {
+    display: flex;
+
+    > div {
+        flex: 1;
+
+        &.img {
+            width: 170px;
+            flex: initial;
+            height: 170px;
+            overflow: hidden;
+            margin: 20px;
+            position: relative;
+        }
+
+        img {
+            width: 200px;
+            position: absolute;
+            left: -15px;
+            top: -15px;
+        }
+    }
+
+    .secret {
+        background: var(--color-white-hover);
+        width: max-content;
+        padding: 6px 13px;
+        color: #fff;
+        border-radius: 5px;
+    }
+}

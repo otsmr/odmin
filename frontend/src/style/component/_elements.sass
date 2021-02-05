@@ -1,0 +1,313 @@
+
+h1, h2, h3, h4, h5, h6
+    margin: 5px 0px
+
+
+.titels
+    margin-top: 17px
+    position: relative
+    display: inline-block
+    margin-left: 10px
+    padding-left: 7px
+    padding-right: 20px
+    
+    &::before
+        content: ""
+        border-top: 2px solid #1564bf
+        width: calc(100% + 16px)
+        z-index: -1
+        position: absolute
+        margin-top: -4px
+        border-left: 2px solid #1564bf
+        height: 35px
+        margin-left: -8px
+        left: 0
+
+.btn
+    border: 0
+    padding: 7px 14px
+    border-radius: 3px
+    font-size: 15px
+    background: $color-primary
+    color: $white
+    font-family: Roboto-Regular
+    cursor: pointer
+    transition: background 50ms
+    outline: 0
+    text-decoration: none
+    display: inline-block
+    height: min-content
+    
+    &:hover
+        background: $color-primary-hover
+
+    &:focus, &:active
+        background: $color-primary-aktiv
+
+    &:active
+        transform: translateY(.5px)
+
+    &.warn
+        background: $color-red
+        color: $clear-white
+        
+
+.btn.top-right
+    position: absolute
+    top: 25px
+    right: 25px
+
+.btn.light
+    background: var(--color-white-blue)
+    color: $black
+
+    &:hover
+        background: var(--color-white-blue-hover)
+
+    &:focus, &:active
+        background: var(--color-white-blue-hover)
+
+.btn.load
+    background: $black
+    position: relative
+    border-radius: 3px
+    color: $color-primary !important
+    background: $color-primary !important
+    cursor: not-allowed
+
+    &::after
+        content: "\f110"
+        font-family: "Font Awesome"
+        font-weight: 900
+        position: absolute
+        color: $white
+        animation: rotate 2s infinite linear
+        text-align: center
+        width: 100%
+        left: 0
+
+
+@keyframes rotate
+    0%
+        transform: rotate(0deg)
+    100%
+        transform: rotate(1turn)
+
+
+@media (max-width: 500px)
+    .btn 
+        padding: 10px 16px
+        font-size: 17px
+
+    .btn.top-right
+        position: unset
+
+
+.input-invalid,
+.input-group
+    span
+        font-size: 12px
+        display: block
+        margin: 0
+        width: 200px
+        text-align: left
+
+.input-invalid
+    input
+        border-color: $color-red !important
+    
+    span
+        color: var(--red)
+
+.signin .input-invalid
+    span
+        text-align: center
+        margin: -4px 0 17px
+        width: auto
+
+
+.input
+    border: 0
+    padding: 5px 11px
+    border-radius: 3px
+    font-size: 15px
+    border: 2px solid var(--color-light-shadow)
+    background: var(--color-white-blue)
+    color: $white
+    font-family: Roboto-Regular
+    transition: 50ms
+    color: $black
+    cursor: text
+    outline: 0
+
+    &.big
+        width: 100%
+
+    &:hover
+        background: var(--color-white-blue)-hover
+
+    &:active, &:focus, &.open
+        border-color: $color-primary-light
+        background: $white
+
+    &[disabled]
+        background: transparent
+        cursor: not-allowed
+
+    &.invalid
+        border-color: $color-red
+
+.inputfail
+    position: absolute
+    font-size: 13px
+    z-index: 10000
+    background: $black
+    padding: 6px 3px
+    border-radius: 3px
+    color: $white
+    transform: translateX(-50%)
+    padding: 9px
+    text-align: center
+
+@media (max-width: 500px)
+    .input 
+        padding: 10px 14px
+
+
+
+
+table.big
+    width: 100%
+    text-align: left
+    border-collapse: collapse
+    padding: 8px 4px
+    border-bottom: 1px solid $color-primary
+
+    p
+        margin: 0
+
+    tr
+        cursor: pointer
+        th, td
+            padding: 10px 3px
+        &:hover
+            background-color: var(--color-white-blue)
+
+
+    tr:first-child th
+        border-bottom: 1px solid $color-primary
+        padding: 6px 3px
+        font-size: 15px
+        font-weight: normal
+        color: $color-primary-dark
+        background-color: $white
+
+    td
+        // padding: 10px 
+        font-size: 15px
+
+        .icon
+            background: orange
+            width: 27px
+            height: 27px
+            border-radius: 50%
+            color: $white
+            text-align: center
+            padding: 6px 0
+            margin: 0 5px
+            font-size: 15px
+    
+table.small
+    max-width: 1000px
+    width: 90%
+    margin: 0 auto
+    border-collapse: collapse
+
+    thead tr
+        text-align: left
+        font-size: 13px
+        font-weight: normal  
+
+        th
+            padding: 13px 20px
+
+        th:nth-child(1)
+            width: 25%
+        th:nth-child(2)
+            width: 55%      
+        th:nth-child(3)
+            width: 20%
+
+    tbody tr
+        border-bottom: 2px solid $color-white-hover
+        cursor: pointer
+        td
+            padding: 13px 20px
+        td:nth-child(2)
+            overflow: hidden
+            text-overflow: ellipsis
+            font-size: 13px
+            display: inline-block 
+        td:nth-child(3)
+            text-align: right
+            width: 115px
+        &:last-child
+            border: none
+
+        &:hover
+            background: $color-white-hover
+    
+    .summary
+        display: flex
+        min-width: 175px
+
+        .icon
+            font-size: 20px
+            padding-top: 2px
+            border-radius: 50%
+            border: 3px solid $color-white-hover
+            height: 32px
+            width: 33px
+            margin: 4px 11px 0 0
+            text-align: center
+            min-width: 33px
+
+        h3
+            margin: 0
+        p
+            margin: 0
+            font-size: 13px
+
+.sidebar
+
+    .close
+        margin: 81px 18px 20px
+        font-size: 26px
+        color: $clear-white
+        cursor: pointer
+    
+    [sidebar]
+        margin: 0 50px
+
+        ul
+            color: $clear-white
+
+            p
+                font-size: 13px
+                margin-bottom: 20px
+
+            li
+                display: flex
+                margin: 8px 0
+                cursor: pointer
+                padding: 4px 17px
+                border-radius: 4px
+
+                .icon
+                    font-size: 13px
+                    width: 21px
+                    text-align: center
+                    margin: 10px 14px 0 0
+                
+                &:hover
+                    background: $color-primary-hover

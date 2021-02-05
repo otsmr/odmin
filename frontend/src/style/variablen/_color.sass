@@ -1,0 +1,86 @@
+
+
+// html 
+//     color-scheme: light dark
+
+//     --black: #000
+//     --white: #fff
+//     --white-hover: #eee
+//     --red: #f00
+//     --clear-white: #fff
+//     --color-white-grey: #aaa
+//     --color-white-hover: rgba(11, 11, 11, 0.043)
+
+//     --color-light-shadow: #E4E4E4
+
+//     --color-white-blue: #F4F5F7
+//     --color-white-blue-hover: #f2eded
+
+//     --color-primary: #1564BF
+//     --color-primary-hover: #0554af
+//     --color-primary-aktiv: #00419c
+
+//     --color-primary-light: #5E91F2
+//     --color-primary-dark: #003B8E
+
+// html body.dark
+html
+    --black: #aaa
+    --white: #111
+    --white-hover: #181818
+    --red: #f00
+    --clear-white: #fff
+    --color-white-grey: #666
+    --color-white-hover: rgba(85, 85, 85, 0.4)
+
+    --color-light-shadow: #444
+
+    --color-white-blue: #222
+    --color-white-blue-hover: #000
+
+    --color-primary: #1564BF
+    --color-primary-hover: #0554af
+    --color-primary-aktiv: #00419c
+
+    --color-primary-light: #003B8E
+    --color-primary-dark: #5E91F2
+
+
+*
+    scrollbar-color:  var(--color-white-blue) var(--color-white-blue-hover)
+    scrollbar-width: thin
+
+::-webkit-scrollbar
+    width: 8px
+    background: var(--color-white-blue-hover)
+
+::-webkit-scrollbar-thumb
+    background: var(--color-white-blue)
+
+
+::-moz-selection,
+::selection 
+  color: var(--clear-white)
+  background: var(--color-primary-aktiv)
+
+
+$black: var(--black)
+$white: var(--white)
+$color-white-hover: var(--white-hover)
+$clear-white: var(--clear-white)
+
+$color-red: var(--red)
+
+$color-white-grey: var(--color-white-grey)
+$color-white-hover: var(--color-white-hover)
+// var(--color-light-shadow): var(--color-light-shadow)
+
+$color-white-blue: var(--color-white-blue)
+$color-white-blue-hover: var(--color-white-blue-hover)
+
+$color-primary: var(--color-primary)
+$color-primary-hover: var(--color-primary-hover)
+$color-primary-aktiv: var(--color-primary-aktiv)
+
+$color-primary-light: var(--color-primary-dark)
+$color-primary-dark: var(--color-primary-light)

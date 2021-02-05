@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+      "target": "es6",
+      "module": "commonjs",
+      "allowJs": true,
+      "outDir": "./build",
+      "moduleResolution": "node",
+      "sourceMap": true
+    },
+    "files": [
+        "./src/server.ts"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "node_modules"
+    ]
+  }

@@ -1,0 +1,113 @@
+select.input {
+    cursor: pointer;
+}
+.select {
+    position: relative;
+    padding-right: 40px;
+    cursor: pointer;
+    display: inline-flex;
+    outline: 0;
+    min-width: 150px;
+    height: 32px;
+
+    .overlay {
+        position: absolute;
+        padding: 5px 11px;
+        background: var(--color-white-blue);
+        min-width: calc(100% + 4px);
+        left: -2px;
+        top: -2px;
+        border: 2px solid var(--color-primary-light);
+        border-radius: 3px;
+        z-index: 1;
+        height: calc(100% + 4px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: calc(100% + 50px);
+        padding-right: 26px;
+
+        div {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            i {
+                position: absolute;
+                right: 10px;
+                top: 7px;
+            }
+        }
+    }
+
+    .toggle::after {
+        content: "\f107";
+        font-family: "Font Awesome";
+        font-weight: 900;
+        position: absolute;
+        right: 11px;
+    }
+
+    .list {
+        position: absolute;
+        min-width: 166px;
+        top: 33px;
+        left: -1px;
+        border: 2px solid var(--color-primary-light);
+        border-radius: 3px;
+        display: none;
+        max-height: 207px;
+        background: var(--color-white-blue);
+
+        ul {
+            margin: 0;
+            padding: 3px 0;
+            list-style: none;
+            max-height: 170px;
+            overflow: auto;
+
+            div {
+                color: #fff;
+                font-size: 13px;
+                margin: 2px 7px 2px;
+                width: calc(100% - 7px);
+                border-top: 1px solid #383838;
+                padding-top: 3px;
+            }
+
+            li {
+                padding: 5px 11px;
+                cursor: pointer;
+
+                &:hover {
+                    background: var(--color-white-blue-hover);
+                }
+                &.selected {
+                    background: var(--color-white-blue-hover);
+                }
+            }
+        }
+
+        &.search {
+            padding-top: 38px;
+            min-width: 200px;
+            max-height: 217px;
+
+            .input {
+                position: absolute;
+                width: calc(100% - 10px);
+                top: 0;
+                background: var(--white);
+                margin: 5px;
+            }
+        }
+    }
+
+    &.top .list {
+        bottom: 33px;
+        top: unset;
+    }
+    &.open .list {
+        display: block;
+    }
+}

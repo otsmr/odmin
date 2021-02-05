@@ -1,0 +1,71 @@
+
+.collection
+    display: grid
+    grid-gap: 20px
+    grid-template-columns: repeat(auto-fit, 432px)
+    grid-auto-flow: row dense
+
+    &.big
+        grid-template-columns: repeat(auto-fit, 500px)
+
+
+    .cart
+        align-self: start
+
+@media (max-width: 1000px)
+
+    .collection
+        grid-template-columns: 1fr
+
+
+.cart
+    border-radius: 5px
+    border: 1px solid var(--color-white-grey)
+    max-width: 432px
+    width: 100%
+
+    &.big
+        max-width: 500px
+
+    p.title
+        padding: 0
+        margin: 0px 0 4px
+        font-size: 17px
+    &.padding
+        padding: 17px
+    .body
+        padding: 17px
+        padding-bottom: 7px
+    .footer
+        padding: 17px
+        border-top: 1px solid var(--color-white-grey)
+        transition: 100ms
+        width: 100%
+        display: block
+        color: var(--black)
+
+        &:hover
+            background: $color-white-hover
+            cursor: pointer
+
+    .item
+        display: flex
+        padding: 15px 15px
+        border-bottom: 1px solid var(--color-white-grey)
+        transition: 100ms
+
+        &:hover
+            background: $color-white-hover
+            cursor: pointer
+
+        &:last-of-type
+            border-bottom: none
+        
+        > div
+            flex: 1
+
+            &:last-child
+                text-align: right
+    &.bigsize
+        max-width: none
+        margin: 20px 0
