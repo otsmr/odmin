@@ -3,6 +3,7 @@
     "port": 3000
   },
   "nodeEnv": "development | production",
+  "ipinfoservice": "https://ipinfo.oproj.de/",
   "dev": {
     "invitetoken": "token"
   },

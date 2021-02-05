@@ -178,7 +178,7 @@ export default (socket, slog) => {
 
         const tokenInDB = await getToken("inviteToken", data.inviteToken);
         const tokenDevAllow = config.get("nodeEnv") === "development" &&  data.inviteToken === config.get("dev:invitetoken");
-        if (tokenInDB.err || tokenDevAllow) return call(true);
+        if (tokenInDB.err) return call(true);
 
         if (tokenInDB.token === null && !tokenDevAllow) return call(false, {
             createSucces: false,

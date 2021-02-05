@@ -19,6 +19,7 @@ Simple user management with the aim to learn common web security vulnerability.
 
 - OAuth -> token not in the url
 - sql-injection?
+- logging + monitoring
 - DoS?
 - http headers
     - x-frame
@@ -26,3 +27,37 @@ Simple user management with the aim to learn common web security vulnerability.
     - content-type
     - ...
 - ...
+
+
+# getting started
+
+Required are docker, nodejs and npm.
+
+**Backend**
+```
+cd backend
+docker-compose up -d
+cp config.sample.json config.json
+```
+
+*update config.json*
+```
+mysql.port <- docker inspect backend_db_1 | grep IPAddress
+mysql.port = 3308
+mysql.pass = odmin
+mysql.database = odmin
+mysql.user = odmin
+```
+
+*start backend server*
+```
+npm i
+npm run dev
+```
+
+**Backend**
+```
+cd frontend
+npm i
+npm start
+```

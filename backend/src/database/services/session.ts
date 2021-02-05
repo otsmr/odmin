@@ -34,13 +34,19 @@ export const createNewSession = async (user: any, ipadress?: string, userAgent?:
                 "127.0.0.1",
                 ""
             ]
-    
-            if (localDomains.indexOf(ipadress) > -1 || ipadress.startsWith("127.0.0.")) {
+
+            // use real ip in dev
+            if (
+                config.get("nodeEnv") === "development" && 
+                (localDomains.indexOf(ipadress) > -1 || ipadress.startsWith("127.0.0."))    
+            ) {
                 try {
+                    
                     const resMyIP = await fetch(config.get("ipinfoservice") + "/api/myip");
                     const jsonMyIP = await resMyIP.json();
                     ipadress = jsonMyIP.ip || "";
                     sessions.clientip = ipadress;
+
                 } catch (error) {
                     console.error(error);
                 }

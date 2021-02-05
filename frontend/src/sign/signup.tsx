@@ -52,7 +52,7 @@ export default function () {
             
             setIsLoading(false);
         
-            if (err) return console.error(err);
+            if (err) return console.error("/sign/privacyaccepted", err, data);
 
             setCookie("token", data.cookieToken || "");
 
@@ -85,7 +85,7 @@ export default function () {
 
             setIsLoading(false);
             
-            if (err) return console.error(err);
+            if (err) return console.error("/sign/checksignup", err, data);
 
             if (data.createSucces) {
                 setUsername("");
