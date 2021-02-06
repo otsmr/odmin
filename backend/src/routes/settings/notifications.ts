@@ -13,8 +13,6 @@ import { strict } from "assert";
 interface IInputProblem { inputid: string, msg: string, inputValue: string }
 interface ApiData {
     email: string,
-    matrixid: string,
-    telegramid: string,
     newsletter: boolean,
     securityNotifications: number,
     chanels: {
@@ -37,8 +35,6 @@ export default (socket: any, slog: {(msg: string): void}) => {
  
         call(false, {
             email: notify.email || "",
-            matrixid: notify.matrixid || "",
-            telegramid: notify.telegramid || "",
             newsletter: notify.newsletter || false,
             securityNotifications: notify.securityNotifications || 0,
             chanels: {
@@ -112,7 +108,7 @@ export default (socket: any, slog: {(msg: string): void}) => {
     })
     
     .on("/settings/notifications/updatecommunicationtypes", (data: {
-        email?: string, matrixid?: string, telegramid?: string
+        email?: string
     }, call: {(err: boolean, data: {
         problemWithInput?: IInputProblem,
         updateSuccess: boolean

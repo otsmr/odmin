@@ -9,8 +9,6 @@ import "../../../style/elements/radio.scss"
 
 interface ApiData {
     email: string,
-    matrixid: string,
-    telegramid: string,
     newsletter: boolean,
     securityNotifications: number,
     dataLoaded: boolean,
@@ -44,14 +42,6 @@ function NotificationsChanels (props: {
                     title: "E-Mail",
                     value: "email"
                 })
-                if (data.matrixid !== "") options.push({
-                    title: "Matrix",
-                    value: "matrix"
-                })
-                if (data.telegramid !== "") options.push({
-                    title: "Telegram",
-                    value: "telegram"
-                })
             }
 
             if (options.length === 0) options.push({
@@ -76,8 +66,6 @@ export default function () {
 
     const [lastData, setLastData] = useState(({
         email: "",
-        matrixid: "",
-        telegramid: "",
         newsletter: false,
         securityNotifications: 0,
         dataLoaded: false,
@@ -88,8 +76,6 @@ export default function () {
         }
     } as ApiData));
 
-    const [matrixid, setMatrixid] = useState("");
-    const [telegramid, setTelegramid] = useState("");
     const [toasts, setToasts] = useState([<div key="-1"></div>]);
 
     const [newsletter, setNewsletter] = useState(false);
@@ -132,8 +118,6 @@ export default function () {
             setLastData({...data, dataLoaded: true, updating: true});
             
             setEmail(data.email);
-            setMatrixid(data.matrixid);
-            setTelegramid(data.telegramid);
             setNewsletter(data.newsletter);
             setSecurityNotifications(data.securityNotifications);
             setNewsletterChanel(data.chanels.newsletter);
@@ -149,14 +133,10 @@ export default function () {
     function updateCommunicationType (type: string) {
 
         const data: {
-            email?: string,
-            matrixid?: string,
-            telegramid?: string
+            email?: string
         } = {}
 
         if (type === "email" && email !== lastData.email) data.email = email;
-        if (type === "matrix" && matrixid !== lastData.matrixid) data.matrixid = matrixid;
-        if (type === "telegram" && telegramid !== lastData.telegramid) data.telegramid = telegramid;
 
         socket.emit("/settings/notifications/updatecommunicationtypes", data, (err: boolean, data: {
             problemWithInput?: IInputProblem,
@@ -217,34 +197,6 @@ export default function () {
                             <button className="btn" onClick={e => updateCommunicationType("email")}>Bestätigen</button>
                         ) : null}
                     </div>
-                </div>
-
-                <div className="cart padding">
-
-                    <p className="title">Matrix</p>
-                    <div className="input-flex">
-                        <Input inputid="matrixid" problemWithInput={problemWithInput} setProblemWithInput={setProblemWithInput}>
-                            <input placeholder="@tsmr:matrix.org" value={matrixid} className="input" type="text" onChange={e => setMatrixid(e.target.value)} />
-                        </Input>
-                        {(matrixid !== lastData.matrixid) ? (
-                            <button className="btn" onClick={e => updateCommunicationType("matrix")}>Bestätigen</button>
-                        ) : null}
-                    </div>
-                </div>
-
-                <div className="cart padding">
-
-                    <p className="title">Telegram</p>
-                    <div className="input-flex">
-                        <Input inputid="telegramid" problemWithInput={problemWithInput} setProblemWithInput={setProblemWithInput}>
-                            <input placeholder="Nummer" value={telegramid} className="input" type="text" onChange={e => setTelegramid(e.target.value)} />
-                        </Input>
-                        {(telegramid !== lastData.telegramid) ? (
-                            <button className="btn" onClick={e => updateCommunicationType("telegram")}>Bestätigen</button>
-                        ) : null}
-
-                    </div>
-
                 </div>
 
             </div>

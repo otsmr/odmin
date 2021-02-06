@@ -22,8 +22,6 @@ export const getNotificationsByUserID = async (userid: number) => {
 
 export const updateNotifications = async (userid: number, data: {
     email?: string,
-    matrixid?: string,
-    telegramid?: string,
     newsletter?: boolean,
     securityNotifications?: number,
     newsletterChanel?: string,

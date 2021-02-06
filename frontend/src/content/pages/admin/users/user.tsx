@@ -22,9 +22,7 @@ interface IUserAll extends IUser {
     updatedAt: string,
     sessions: ISession[],
     chanels: {
-        email: string,
-        matrixid: string,
-        telegramid: string
+        email: string
     }
 }
 

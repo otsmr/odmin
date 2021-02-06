@@ -41,8 +41,6 @@ export default (socket, slog) => {
                 
         const options = {
             email: notify?.email || "",
-            matrixid: notify?.matrixid || "",
-            telegramid: notify?.telegramid || "",
             lastSession: {
                 clientip: "",
                 browser: "",

@@ -13,8 +13,6 @@ export default function (props: {
     const [userData, setUserData] = useState({ 
         dataLoaded: false,
         email: "",
-        matrixid: "",
-        telegramid: "",
         lastSession: ({ 
             id: 0,
             clientip: "",
@@ -51,7 +49,7 @@ export default function (props: {
     
     if (!userData.dataLoaded) {
 
-        socket.emit("/personalinfo/summary", (err: boolean, data: { email: string, matrixid: string, telegramid: string, lastSession: ISession }) => {
+        socket.emit("/personalinfo/summary", (err: boolean, data: { email: string, lastSession: ISession }) => {
             if (err) return console.error(data);
 
             setUserData({
@@ -86,14 +84,6 @@ export default function (props: {
                             <Link className="item" to="/settings/notifications">
                                 <div>E-Mail-Adresse</div>
                                 <div>{(userData.email === "") ? "Nicht angegeben" : userData.email}</div>
-                            </Link>
-                            <Link className="item" to="/settings/notifications">
-                                <div>Matrix-ID</div>
-                                <div>{(userData.matrixid === "") ? "Nicht angegeben" : userData.matrixid}</div>
-                            </Link>
-                            <Link className="item" to="/settings/notifications">
-                                <div>Telegram-ID</div>
-                                <div>{(userData.telegramid === "") ? "Nicht angegeben" : userData.telegramid}</div>
                             </Link>
                             <br />
                         </div>

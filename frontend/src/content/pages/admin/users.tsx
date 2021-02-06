@@ -26,9 +26,7 @@ interface IUserAll extends IUser {
         time: string
     }[],
     chanels: {
-        email: string,
-        matrixid: string,
-        telegramid: string
+        email: string
     }
 }
 

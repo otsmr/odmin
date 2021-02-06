@@ -12,16 +12,6 @@ export default (sequelize, DataTypes) => {
             allowNull: true,
             defaultValue: ""
         },
-        matrixid: {
-            type: DataTypes.STRING(70),
-            allowNull: true,
-            defaultValue: ""
-        },
-        telegramid: {
-            type: DataTypes.STRING(70),
-            allowNull: true,
-            defaultValue: ""
-        },
         newsletter: {
             type: DataTypes.BOOLEAN,
             allowNull: false,

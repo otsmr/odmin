@@ -21,9 +21,7 @@ interface IUserAll extends IUser {
     updatedAt: string,
     sessions: ISession[],
     chanels: {
-        email: string,
-        matrixid: string,
-        telegramid: string
+        email: string
     }
 }
 
@@ -110,9 +108,7 @@ export default (socket: any, slog: {(msg: string): void}) => {
             isWebAuthnInUse: (webAuthnKeys.length > 0),
             lastLogin: (sessions.length > 0) ? getHumanTime((sessions[sessions.length-1] as any).createdAt) : "-",
             chanels: {
-                email: (notification) ? notification.email : "",
-                matrixid: (notification) ? notification.matrixid : "",
-                telegramid: (notification) ? notification.telegramid : ""
+                email: (notification) ? notification.email : ""
             },
             sessions
         })
