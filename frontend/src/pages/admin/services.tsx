@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Toast from '../../components/toast';
 import { emptyInputProblem, Input, IInputProblem } from '../../components/input';
 import Table from '../../components/table';
-import socket from '../../../socket';
+import socket from '../../utils/socket';
 
 interface Service {
     id: number,

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Portal } from './portal';
 
 
-import "../../style/component/toast.scss"
+import "../assets/style/component/toast.scss"
 
 
 export default function (props: {

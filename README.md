@@ -49,6 +49,9 @@ mysql.database = odmin
 mysql.user = odmin
 ```
 
+*E-Mail debugging**
+Test-Server: https://github.com/nodemailer/nodemailer-app
+
 *start backend server*
 ```
 npm i

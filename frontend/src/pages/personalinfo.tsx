@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import socket from '../../socket';
-import { downloadFile } from '../../utils';
+import socket from '../utils/socket';
+import { downloadFile } from '../utils/utils';
 
 import { ISession, ISecurityData } from "./security"
 

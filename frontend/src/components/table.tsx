@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import "../../style/component/table.scss"
+import "../assets/style/component/table.scss"
 import moment from 'moment';
 
 export default function Table (props: {

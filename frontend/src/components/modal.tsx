@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Portal } from './portal';
 
-import "../../style/component/modal.scss"
+import "../assets/style/component/modal.scss"
 
 export default function (props: {
     title: string,

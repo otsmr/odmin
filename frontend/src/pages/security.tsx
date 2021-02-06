@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import socket from '../../socket';
+import socket from '../utils/socket';
 import Table from '../components/table';
 
 export interface ISession {

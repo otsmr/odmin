@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-import "./../style/elements/form.scss"
-import "./../style/pages/sign.scss"
+import "./../assets/style/elements/form.scss"
+import "./../assets/style/pages/sign.scss"
 
-import socket from '../socket';
-import { setCookie, blurAll, getSearchLocation } from '../utils';
+import socket from '../utils/socket';
+import { setCookie, blurAll, getSearchLocation } from '../utils/utils';
 
-import { useLockedSign, IService, checkService } from "./helpers"
+import { useLockedSign, IService, checkService } from "../components/LockedSign"
 
 let checkedLocked = false;
 

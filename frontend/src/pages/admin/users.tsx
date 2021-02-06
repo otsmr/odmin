@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Toast from '../../components/toast';
-import { emptyInputProblem, Input, IInputProblem } from '../../components/input';
+import { emptyInputProblem } from '../../components/input';
 import Table from '../../components/table';
-import Select from '../../components/select';
-import socket from '../../../socket';
+import socket from '../../utils/socket';
 import { Link } from 'react-router-dom';
 
 interface IUser {
@@ -106,9 +104,9 @@ export default function () {
                     disabledRows={allUsers.map(user => !user.enabled)}
                     data={allUsers.map(user => [String(user.id), user.name, roles.find(e => e.value === user.role)?.title || "-", user.createdAt, (
                     <div className="td-actions">
-                       <Link to={`/admin/users/${user.id}`}>
+                       {/* <Link to={`/admin/users/${user.id}`}>
                             <button className="btn"><i className="fas fa-edit"></i></button>
-                        </Link>
+                        </Link> */}
                     </div>
                     )])}
                     

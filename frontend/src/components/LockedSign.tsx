@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { createBeautifulCountdown } from '../utils';
-import socket from '../socket';
+import { createBeautifulCountdown } from '../utils/utils';
+import socket from '../utils/socket';
 
 export interface IService { 
     id: string

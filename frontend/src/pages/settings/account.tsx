@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { cleanUsername } from '../../../utils';
+import { cleanUsername } from '../../utils/utils';
 
 import Modal from "../../components/modal"
 import Toast from "../../components/toast"
-import socket from '../../../socket';
+import socket from '../../utils/socket';
 
 import { Input, IInputProblem } from "../../components/input"
 

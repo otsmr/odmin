@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link, Route } from 'react-router-dom';
 
-import logo from "../../img/logo.svg";
+import logo from "../assets/img/logo.svg";
 
-import "../../style/component/aside.scss"
-import "../../style/component/navigation.scss"
+import "../assets/style/component/aside.scss"
+import "../assets/style/component/navigation.scss"
 
 const navlinks: any = {
     "" : [

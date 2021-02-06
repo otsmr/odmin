@@ -6,20 +6,20 @@ import {
     Route, Switch, Redirect
 } from "react-router-dom";
 
-import Dialog from "./content/components/dialog"
+import Dialog from "./components/dialog"
 
-import "./style/main.scss"
+import "./assets/style/main.scss"
 
-import Signin from "./sign/signin"
-import Signup from "./sign/signup"
-import socket from './socket';
+import Signin from "./pages/signin"
+import Signup from "./pages/signup"
+import socket from './utils/socket';
 
-import Navigation from "./content/components/navigation"
-import Overview from "./content/pages/overview"
-import Security from "./content/pages/security"
-import Settings from "./content/pages/settings/index"
-import Admin from "./content/pages/admin/index"
-import Personalinfo from "./content/pages/personalinfo"
+import Navigation from "./components/navigation"
+import Overview from "./pages/overview"
+import Security from "./pages/security"
+import Settings from "./pages/settings/index"
+import Admin from "./pages/admin/index"
+import Personalinfo from "./pages/personalinfo"
 
 let intervall: any | undefined = undefined;
 let lastUser: any = null;
@@ -116,14 +116,10 @@ function App () {
 
             )}
 
-
-
         </Router>
 
     );
 
 }
-
-
 
 ReactDOM.render(<App />, document.getElementById('root'));

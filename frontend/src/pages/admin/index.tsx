@@ -6,7 +6,6 @@ import Invitetoken from "./invitetoken"
 import Services from "./services"
 import Newsletter from "./newsletter"
 import Users from "./users"
-import User from "./users/user"
 
 export default function () {
     return (
@@ -14,7 +13,6 @@ export default function () {
 
             <Route path="/admin/overview" component={Overview} />
             <Route path="/admin/services" component={Services} />
-            <Route path="/admin/users/:userid" component={User} />
             <Route path="/admin/users" component={Users} />
             <Route path="/admin/invitetoken" component={Invitetoken} />
             <Route path="/admin/newsletter" component={Newsletter} />

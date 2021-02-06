@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Input, emptyInputProblem, IInputProblem } from '../../components/input';
 import Toast from '../../components/toast';
 import Table from '../../components/table';
-import socket from '../../../socket';
+import socket from '../../utils/socket';
 
 interface Token {
     name: string,

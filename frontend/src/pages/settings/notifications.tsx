@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import socket from '../../../socket';
+import socket from '../../utils/socket';
 
 import { Input, IInputProblem } from "../../components/input"
 import Select from "../../components/select"
 import Toast from "../../components/toast"
 
-import "../../../style/elements/radio.scss"
+import "../../assets/style/elements/radio.scss"
 
 interface ApiData {
     email: string,

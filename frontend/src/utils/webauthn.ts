@@ -1,5 +1,5 @@
 
-import socket from "../socket";
+import socket from "../utils/socket";
 
 import {
     base64encode,

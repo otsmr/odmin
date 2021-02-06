@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 
-import "../../style/elements/select.scss"
+import "../assets/style/elements/select.scss"
 
 export default function (props: {
     options: { value?: string, title: string }[],

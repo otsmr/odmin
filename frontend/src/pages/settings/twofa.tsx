@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import socket from '../../../socket';
+import socket from '../../utils/socket';
 
 import Toast from "../../components/toast"
 import { Input, IInputProblem } from "../../components/input"
 
-import "../../../style/pages/twofa.scss"
+import "../../assets/style/pages/twofa.scss"
 
 
 interface ITwoFAData {
