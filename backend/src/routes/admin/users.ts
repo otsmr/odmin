@@ -61,6 +61,7 @@ export default (socket: any, slog: {(msg: string): void}) => {
 
         slog("API /admin/users/getall");
 
+        // TODO: create special log for this type of error
         if (!socket.user || socket.user.role !== "admin") return call(true);
 
         const user = await getUserByID(userid);
