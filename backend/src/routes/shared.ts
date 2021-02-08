@@ -95,7 +95,7 @@ export async function getUserByCookie (socket: any): Promise<{ userid: number, u
 
         if (!user) return signOutAlert(socket);
 
-        socket.user = user.inDB;
+        socket.user = user.userdb;
         socket.currentSession = user.session;
 
         return {

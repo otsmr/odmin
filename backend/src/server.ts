@@ -13,15 +13,13 @@ globalThis.isDev = config.get("isDev");
 
 import database from "./database/initdb"
 
-import apiMiddleware from "./routes/http-get"
-
-// import webauthnSocket from "./routes/webauthn"
+import apiMiddleware from "./routes/api"
 
 import useSignSocket from "./routes/sign"
 import useProfileSocket from "./routes/profile"
 import useSettingsSocket from "./routes/settings/index"
 import useAdminSocket from "./routes/admin/index"
-import { getUserByCookie } from './routes/shared'
+import { IAPI_EROR_MESSAGE } from './interfaces/api-response'
 
 
 const app = express();
@@ -29,31 +27,33 @@ const io = socket();
 
 app.use(morgan("combined", { stream: log.stream }));
 app.use(cookieParser());
+
 app.use(apiMiddleware);
 
-app.get("/", (req, res) => {
+app.use((req, res) => {
 
     res.setHeader('Content-Type', 'application/json');
-    return res.send(JSON.stringify({
-        error: "403 Forbidden"
-    }))
+    res.status(403);
+
+    let response: IAPI_EROR_MESSAGE = {
+        error: true,
+        message: "403 Forbidden"
+    }
+
+    return res.send(JSON.stringify(response))
 
 })
 
 io.on('connection', (socket) => {
 
-    const slog = (msg: string) => {
+    function slog (msg: string) {
         log.info("socket", `${msg} - ${socket.conn.id}`);
     }
 
-    const checkSignStatus = setInterval(()=>{
-        getUserByCookie(socket)
-    }, 1000);
-
     slog(`Neue Verbindung mit "${socket.handshake.headers.host}"`);
+
     socket.on("disconnect", () => {
         slog("Verbindung getrennt");
-        clearInterval(checkSignStatus);
     });
 
     useSignSocket(socket, slog);

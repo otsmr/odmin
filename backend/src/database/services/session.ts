@@ -9,6 +9,14 @@ import config from "../../utils/config"
 
 import fetch from "node-fetch"
 
+export interface JWT_SESSION_TOKEN {
+    session_token: string
+    user_id: number
+    user_name: string
+    user_role: string
+    service_id: string
+}
+
 export const createNewSession = async (user: any, ipadress?: string, userAgent?: string) => {
 
     try {
@@ -81,12 +89,15 @@ export const createNewSession = async (user: any, ipadress?: string, userAgent?:
 
         await Session.create(sessions);
 
-        return jwt.sign({
-            id: user.id,
-            name: user.name,
-            role: user.role,
-            token: sessions.token
-        }, config.get("jsonwebtoken:secret"), { 
+        const jwtData: JWT_SESSION_TOKEN = {
+            user_id: user.id,
+            user_name: user.name,
+            user_role: user.role,
+            session_token: sessions.token,
+            service_id: "odmin"
+        }
+
+        return jwt.sign(jwtData, config.get("jsonwebtoken:secret"), { 
             expiresIn: '1d'
         });
 

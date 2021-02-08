@@ -1,6 +1,5 @@
 import { getUserByUsername, createNewUser, checkCredentialForSignIn, checkUserIsLocked, checkIsTokanValid } from "../database/services/user";
 import { getToken } from "../database/services/token";
-import * as cookie from "cookie"
 import { checkContinueLocation, getServiceById, getServiceByServiceId } from "../database/services/service";
 import { getUserByCookie } from "./shared";
 import config from "../utils/config";

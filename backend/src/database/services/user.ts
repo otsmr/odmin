@@ -7,7 +7,7 @@ import { User } from '../initdb'
 import log from '../../utils/logs'
 import config from '../../utils/config'
 
-import { createNewSession, getSessionByToken } from "./session";
+import { createNewSession, getSessionByToken, JWT_SESSION_TOKEN } from "./session";
 import { getAllKeysByUserid } from "./webauthn"
 import { getTokens, createNewToken } from "./token"
 import { checkUserName } from '../../routes/shared';
@@ -197,25 +197,30 @@ export const createNewUser = async (data: { username: string, password: string, 
 }
 
 
-export const checkIsTokanValid = async (token: string) => {
+export const checkIsTokanValid = async (jwt_token: string)  => {
 
     try {
 
-        if (!token) return null;
+        if (!jwt_token) return null;
 
-        const user: any = jwt.verify(token, config.get("jsonwebtoken:secret"));
+        const jwt_data = (jwt.verify(jwt_token, config.get("jsonwebtoken:secret")) as JWT_SESSION_TOKEN);
+
+        // the token is from an service
+        if (jwt_data.service_id !== "odmin") {
+            return null;
+        }
         
-        const userdb = await getUserByID(user.id);
+        const userdb = await getUserByID(jwt_data.user_id);
 
-        const session = await getSessionByToken(user.id, user.token);
+        const session = await getSessionByToken(jwt_data.user_id, jwt_data.session_token);
 
         if (session && userdb)  {
             return {
-                id: user.id,
+                id: userdb.id,
                 username: userdb.name,
                 role: userdb.role,
-                token: user.token,
-                inDB: userdb,
+                token: jwt_data.session_token,
+                userdb: userdb,
                 session: session
             }
         }
