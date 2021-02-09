@@ -1,5 +1,5 @@
 import * as moment from "moment"
-import { getAllServices, getServiceByName, updateCreateService, Service, removeServiceById, getServiceById } from "../../database/services/service";
+import { getAllServices, getServiceByName, updateCreateService, IService, removeServiceById, getServiceById } from "../../database/services/service";
 import { confirm } from "../../utils/dialog";
 
 interface IInputProblem { inputid: string, msg: string, inputValue: string }
@@ -11,7 +11,7 @@ interface ServiceCallBack {(err: boolean, data: {
 }): void}
 
 
-async function checkAndSaveService (userid: number, service: Service, inputPrefix: string, call: ServiceCallBack) {
+async function checkAndSaveService (userid: number, service: IService, inputPrefix: string, call: ServiceCallBack) {
 
     service.name = service.name.replace(/[^a-zA-Z0-9_ ]/g, "");
 
@@ -53,7 +53,7 @@ export default (socket: any, slog: {(msg: string): void}) => {
 
     socket
     
-    .on("/admin/services/getall", async (call: {(err: boolean, allServices?: Service[]): void}) => {
+    .on("/admin/services/getall", async (call: {(err: boolean, allServices?: IService[]): void}) => {
         
         slog("API /admin/services/getall");
 
@@ -61,7 +61,7 @@ export default (socket: any, slog: {(msg: string): void}) => {
 
         const services = await getAllServices();
 
-        call(false, services.map((service: Service) => {
+        call(false, services.map((service: IService) => {
             return {
                 id: service.id,
                 name: service.name,
@@ -74,7 +74,7 @@ export default (socket: any, slog: {(msg: string): void}) => {
 
     })
 
-    .on("/admin/services/create", async (newService: Service, call: ServiceCallBack) => {
+    .on("/admin/services/create", async (newService: IService, call: ServiceCallBack) => {
 
         slog("API /admin/services/create");
 
@@ -98,7 +98,7 @@ export default (socket: any, slog: {(msg: string): void}) => {
 
     })
 
-    .on("/admin/services/update", async (service: Service, call: ServiceCallBack) => {
+    .on("/admin/services/update", async (service: IService, call: ServiceCallBack) => {
 
         slog("API /admin/services/update");
 

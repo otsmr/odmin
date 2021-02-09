@@ -3,7 +3,7 @@ import * as url from 'url';
 import log from "../../utils/logs"
 import { getRandomStringID } from '../../utils/utils';
 
-export interface Service {
+export interface IService {
     id: number,
     serviceID: string,
     name: string,
@@ -12,7 +12,7 @@ export interface Service {
     returnto: string
 }
 
-export const getServiceByName =  async (name: string) => {
+export const getServiceByName =  async (name: string): Promise<IService | null> => {
 
     const services = await Service.findAll({ where: { name } });
 
@@ -20,7 +20,7 @@ export const getServiceByName =  async (name: string) => {
     return null;
 
 }
-export const getServiceByServiceId =  async (serviceid: string) => {
+export const getServiceByServiceId =  async (serviceid: string): Promise<IService | null> => {
 
     const services = await Service.findAll({ where: { serviceID: serviceid } });
 
@@ -29,7 +29,7 @@ export const getServiceByServiceId =  async (serviceid: string) => {
 
 }
 
-export const getServiceById =  async (serviceid: number) => {
+export const getServiceById =  async (serviceid: number): Promise<IService | null> => {
 
     const services = await Service.findAll({
         where: {
@@ -42,13 +42,13 @@ export const getServiceById =  async (serviceid: number) => {
 
 }
 
-export const getAllServices =  async () => {
+export const getAllServices =  async (): Promise<IService[]> => {
 
     return await Service.findAll();
 
 }
 
-export const removeServiceById = async (serviceid: number) => {
+export const removeServiceById = async (serviceid: number): Promise<boolean> => {
 
     try {
         
@@ -67,7 +67,7 @@ export const removeServiceById = async (serviceid: number) => {
 
 }
 
-export const updateCreateService =  async (userid: number, service: Service) => {
+export const updateCreateService =  async (userid: number, service: IService): Promise<boolean> => {
 
     try {
 

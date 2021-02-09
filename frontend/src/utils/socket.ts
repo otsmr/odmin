@@ -2,9 +2,7 @@ import io from "socket.io-client";
 
 console.info("Verbindung zum Websocket wird aufgebaut.");
 
-const location = (window as any).location;
-
-const websocketUrl = location.protocol + "//" + location.host.split(":")[0] + ":3030";
+const websocketUrl = (window as any).CONFIG.apibase;
 
 const socket = io(websocketUrl);
 

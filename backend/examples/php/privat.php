@@ -1,3 +1,5 @@
+
+
 <?php 
 
 require_once "odmin.php"
@@ -23,7 +25,12 @@ require_once "odmin.php"
 </head>
 <body>
 
-    <a href="<?php echo get_odmin_login_url(); ?>">Anmelden</a>
+    <a href="<?php echo get_odmin_logout_url(); ?>">Abmelden</a>
+
+    <p>Mein geheimes Passwort: 12345678</p>
     
 </body>
 </html>
+
+
+

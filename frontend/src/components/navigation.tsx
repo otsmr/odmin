@@ -64,6 +64,15 @@ export default function (props: {
 
     const [isNavOpen, setIsNavOpen] = useState(true);
 
+    let logoutToken = "";
+
+    try {
+        //TODO: token will be an HttpOnly token...
+        logoutToken =  JSON.parse(atob(document.cookie.split("=")[document.cookie.split("=").indexOf("token")+1].split(".")[1])).session_token;
+    } catch (error) {
+        
+    }
+
     return (
         <>
             <div className="aside">
@@ -90,7 +99,7 @@ export default function (props: {
                     <Dropmenu icon="fas fa-user">
                         <>
                             <span className="title">{props.username}</span>
-                            <li id="logout">Ausloggen</li>
+                            <a href={(window as any).CONFIG.apibase + "/api/v0/user/logout/" + logoutToken}><li>Ausloggen</li></a>
                         </>
                     </Dropmenu>
 

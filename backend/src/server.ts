@@ -28,7 +28,7 @@ const io = socket();
 app.use(morgan("combined", { stream: log.stream }));
 app.use(cookieParser());
 
-app.use(apiMiddleware);
+app.use("/api/v0", apiMiddleware);
 
 app.use((req, res) => {
 

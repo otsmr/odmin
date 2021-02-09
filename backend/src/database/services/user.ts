@@ -114,8 +114,6 @@ export const checkCredentialForSignIn = async (data: { continue: string, usernam
         return failed();
     }
 
-    console.log(userInDB.user.twofa);
-
     if (userInDB.user.twofa) {
 
         if (data.twofaToken === "") {
@@ -132,8 +130,6 @@ export const checkCredentialForSignIn = async (data: { continue: string, usernam
             token: data.twofaToken,
             window: 2
         });
-
-        console.log("verified", verified);
     
         if (!verified) {
 
@@ -215,6 +211,9 @@ export const checkIsTokanValid = async (jwt_token: string)  => {
         const session = await getSessionByToken(jwt_data.user_id, jwt_data.session_token);
 
         if (session && userdb)  {
+
+            if (session.valid !== true) return null;
+            
             return {
                 id: userdb.id,
                 username: userdb.name,

@@ -1,9 +1,10 @@
 {
   "server": {
-    "port": 3000
+    "port": 3030
   },
   "nodeEnv": "development | production",
   "ipinfoservice": "https://ipinfo.oproj.de/",
+  "frontend-base-url": "http://localhost:3000",
   "dev": {
     "invitetoken": "token"
   },

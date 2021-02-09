@@ -109,6 +109,34 @@ export const createNewSession = async (user: any, ipadress?: string, userAgent?:
 
 }
 
+export const disableSessionByToken = async (token: string) => {
+
+    try {
+
+        console.log(token);
+
+        const session = await Session.findAll({
+            where: { token }
+        });
+
+        console.log(session);
+
+        if (session.length !== 1) return false;
+
+        await session[0].update({
+            valid: false
+        })
+
+        return true;
+        
+    } catch (error) {
+        log.error("database", `disableSessionByToken: ${error.toString()}`);
+    }
+
+    return false;
+
+}
+
 export const destroySessionByToken = async (token) => {
 
     try {
@@ -116,6 +144,8 @@ export const destroySessionByToken = async (token) => {
         const logs = await Session.findAll({
             where: { token }
         });
+
+        if (logs.length === 0) return false;
 
         for (const item of logs) {
             await item.destroy();

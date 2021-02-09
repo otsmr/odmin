@@ -12,5 +12,12 @@ if (isset($_GET["logout"])) {
     else goHome();
 }
 
-if(isset($_GET['return_to']) && $_GET['return_to'] !== "null") header("Location: " . $_GET['return_to']);
-else goHome();
+if(isset($_GET['continue']) && $_GET['continue'] !== "null") {
+
+    // TODO: is this secure (only relative urls!)??
+    if ($_GET['continue'][0] !== "/") goHome();
+
+    header("Location: " . $_GET['continue']);
+    die();
+}
+goHome();

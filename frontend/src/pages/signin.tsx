@@ -101,6 +101,7 @@ export default function () {
             }
 
             if (data.credentialsAreOk) {
+                //! FIXME: HttpOnly Cookie verwenden !!!! 
                 setCookie("token", data.cookieToken || "");
                 setUsername("");
                 setPassword("");

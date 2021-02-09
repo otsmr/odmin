@@ -1,3 +1,5 @@
+import { DatabaseError } from "sequelize/types";
+
 export default (sequelize, DataTypes) => {
 
     const Session = sequelize.define('Session', {
@@ -9,12 +11,17 @@ export default (sequelize, DataTypes) => {
         },
         token: {
             type: DataTypes.STRING(160),
-            allowNull: false
+            allowNull: false,
+            unique: true
         },
 		type: {
             type: DataTypes.STRING(20),
             allowNull: false,
             defaultValue: 'signin'
+        },
+        valid: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: true
         },
         clientip: {
             type: DataTypes.STRING(64)
