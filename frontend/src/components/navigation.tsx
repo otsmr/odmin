@@ -99,7 +99,7 @@ export default function (props: {
                     <Dropmenu icon="fas fa-user">
                         <>
                             <span className="title">{props.username}</span>
-                            <a href={(window as any).CONFIG.apibase + "/api/v0/user/logout/" + logoutToken}><li>Ausloggen</li></a>
+                            <a href={(window as any).API_BASE + "/api/v0/user/logout/" + logoutToken}><li>Ausloggen</li></a>
                         </>
                     </Dropmenu>
 

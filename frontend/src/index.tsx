@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 
 import {
@@ -29,6 +29,7 @@ function App () {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState({ username: "", role: "", userid: -1 });
+    const [isSockedConnected, setIsSockedConnected] = useState(true);
 
     const checkLoggedIn = (firstCheck: boolean = false) => {
         
@@ -50,6 +51,16 @@ function App () {
         })
 
     }
+
+
+    useEffect(() => {
+
+        socket.on("disconnect", (_: any) => setIsSockedConnected(false));
+        socket.on("connect", (_: any) => setIsSockedConnected(true));
+
+    }, [])
+
+
 
     if (!intervall) {
         checkLoggedIn(true);
@@ -81,6 +92,10 @@ function App () {
                                 <Personalinfo username={user.username} userid={user.userid} />
                             </Route>
                             <Route path="/admin" component={Admin}/>
+                            
+                            <Route path="/signin" >
+                                {/* // TODO: service -> redirect  */}
+                            </Route>
 
                             <Route path="*">
                                 <Redirect to="/overview"/>
@@ -91,12 +106,12 @@ function App () {
                     </div>
 
                     <div className="footer">
-                        {/* <ul className="right">
-                            <li className="darklightchange" title="Dunkles Design">
+                        <ul className="right">
+                            {/* <li className="darklightchange" title="Dunkles Design">
                                 <i className="toggle fas fa-toggle-off"></i>
-                            </li>
-                            <li className="blink"><i className="fas fa-plug"></i></li>
-                        </ul> */}
+                            </li> */}
+                            <li className={(isSockedConnected) ?  "" : "blink" } title={(isSockedConnected) ?  "Mit dem Server verbunden" : "Verbindung zum Server getrennt" }><i className="fas fa-plug"></i></li>
+                        </ul>
                     </div>
 
                 </>
