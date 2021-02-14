@@ -1,24 +1,8 @@
 import { getUserByUsername, createNewUser, checkCredentialForSignIn, checkUserIsLocked, checkIsTokanValid } from "../database/services/user";
 import { getToken } from "../database/services/token";
-import { checkContinueLocation, getServiceById, getServiceByServiceId } from "../database/services/service";
+import { getServiceByServiceId } from "../database/services/service";
 import { getUserByCookie } from "./shared";
 import config from "../utils/config";
-
-
-async function getContinueForService (serviceid: string, continueUrl: string): Promise<string | null> {
-
-    if (!serviceid) return null;
-
-    const service = await getServiceByServiceId(serviceid);
-
-    let oauthtoken = "654605406"
-
-    if (service) 
-        return `${service.returnto}?token=${oauthtoken}&continue=${encodeURIComponent(continueUrl)}`;
-    
-    return null;
-
-}
 
 
 export default (socket, slog) => {
@@ -27,12 +11,14 @@ export default (socket, slog) => {
         username: string,
         password: string,
         token: any,
-        continue: string
+        checkContinue: string,
+        serviceid: string
     } = {
         username: "",
         password: "",
         token: null,
-        continue: "/"
+        checkContinue: "/",
+        serviceid: ""
     };
 
     socket
@@ -100,12 +86,8 @@ export default (socket, slog) => {
 
         slog("API /sign/checkcredential");
         
-        let continueService = await getContinueForService(data.serviceid, data.checkContinue);
-        let continueUrl = continueService || checkContinueLocation(data.checkContinue);
-
         checkCredentialForSignIn({
             ...data,
-            continue: continueUrl,
             ipadress: String(socket.clientip || ""),
             userAgent: socket.handshake.headers["user-agent"]
         }, call);
@@ -190,10 +172,9 @@ export default (socket, slog) => {
         
         signUpData.username = data.username;
         signUpData.password = data.password;
+        signUpData.checkContinue = data.checkContinue;
         signUpData.token = tokenInDB.token;
-
-        let continueService = await getContinueForService(data.serviceid, data.checkContinue);
-        signUpData.continue = continueService || checkContinueLocation(data.checkContinue);
+        signUpData.serviceid = data.serviceid;
 
         call(false, {
             createSucces: true

@@ -65,6 +65,7 @@ export default (socket: any, slog: {(msg: string): void}) => {
             return {
                 id: service.id,
                 name: service.name,
+                secret: service.secret,
                 homepage: service.homepage,
                 returnto: service.returnto,
                 serviceID: service.serviceID,

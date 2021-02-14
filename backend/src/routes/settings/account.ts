@@ -84,6 +84,8 @@ export default (socket: any, slog: {(msg: string): void}) => {
 
     .on("/settings/account/getextendedlogstatus", async (call: {(err: boolean, extendedLogStatus: boolean):void}) => {
 
+        slog("API /settings/account/getextendedlogstatus");
+
         const user = await getUserByCookie(socket);
 
         if (!user) return call(true, false);
@@ -94,6 +96,8 @@ export default (socket: any, slog: {(msg: string): void}) => {
 
     .on("/settings/account/deleteaccount", (call: {(err: boolean, success: string | boolean): void}) => {
 
+        slog("API /settings/account/deleteaccount");
+        
         checkPasswordDialog(socket, "Account löschen", async (status) => {
 
             if (!status) return call(false, false);

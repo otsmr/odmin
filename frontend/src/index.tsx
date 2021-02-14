@@ -67,9 +67,16 @@ function App () {
         intervall = setInterval(checkLoggedIn, 1000);
     }
 
+    // redirect api calls in dev 
+    let location = (window as any).location;
+    if (location.hostname === "localhost" && location.pathname.startsWith("/api")) {
+        location.href = location.href.replace(location.protocol + "//" + location.host, (window as any).API_BASE);
+        return null;
+    }
+
     return (isLoading) ? null : (
 
-        <Router >
+        <Router>
 
             <Dialog />
 

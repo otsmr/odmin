@@ -44,46 +44,46 @@ export const createNewSession = async (user: any, ipadress?: string, userAgent?:
             ]
 
             // use real ip in dev
-            if (
-                config.get("nodeEnv") === "development" && 
-                (localDomains.indexOf(ipadress) > -1 || ipadress.startsWith("127.0.0."))    
-            ) {
-                try {
+            // if (
+            //     config.get("nodeEnv") === "development" && 
+            //     (localDomains.indexOf(ipadress) > -1 || ipadress.startsWith("127.0.0."))    
+            // ) {
+            //     try {
                     
-                    const resMyIP = await fetch(config.get("ipinfoservice") + "/api/myip");
-                    const jsonMyIP = await resMyIP.json();
-                    ipadress = jsonMyIP.ip || "";
-                    sessions.clientip = ipadress;
+            //         const resMyIP = await fetch(config.get("ipinfoservice") + "/api/myip");
+            //         const jsonMyIP = await resMyIP.json();
+            //         ipadress = jsonMyIP.ip || "";
+            //         sessions.clientip = ipadress;
 
-                } catch (error) {
-                    console.error(error);
-                }
+            //     } catch (error) {
+            //         console.error(error);
+            //     }
 
-            }
+            // }
             
-            try {
+            // try {
                 
-                const response = await fetch(config.get("ipinfoservice") + "/api/ip", {
-                    method: 'POST',
-                    headers: {
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        ip: ipadress
-                    })
-                });
-                const responseJSON = await response.json();
+            //     const response = await fetch(config.get("ipinfoservice") + "/api/ip", {
+            //         method: 'POST',
+            //         headers: {
+            //           'Accept': 'application/json',
+            //           'Content-Type': 'application/json'
+            //         },
+            //         body: JSON.stringify({
+            //             ip: ipadress
+            //         })
+            //     });
+            //     const responseJSON = await response.json();
 
-                console.log(responseJSON);
+            //     console.log(responseJSON);
 
-                sessions.city = responseJSON.city;
-                sessions.plz = responseJSON.zipcode;
-                sessions.country = responseJSON.country_long + ` (${responseJSON.region})`;
+            //     sessions.city = responseJSON.city;
+            //     sessions.plz = responseJSON.zipcode;
+            //     sessions.country = responseJSON.country_long + ` (${responseJSON.region})`;
 
-            } catch (error) {
-                console.log(error);
-            }
+            // } catch (error) {
+            //     console.log(error);
+            // }
 
         }
 
@@ -97,9 +97,12 @@ export const createNewSession = async (user: any, ipadress?: string, userAgent?:
             service_id: "odmin"
         }
 
-        return jwt.sign(jwtData, config.get("jsonwebtoken:secret"), { 
-            expiresIn: '1d'
-        });
+        return {
+            jwt: jwt.sign(jwtData, config.get("jsonwebtoken:secret"), { 
+                expiresIn: '1d'
+            }),
+            sessionsToken: sessions.token
+        }
 
     } catch (error) {
         log.error("database", `createNewSession: ${error.toString()}`);
@@ -226,13 +229,12 @@ export const getSessionsFromUser = async (userid) => {
 }
 
 
-export const getSessionByToken = async (userid, token) => {
+export const getSessionByToken = async (token: string) => {
 
     try {
 
         let session = await Session.findAll({
             where: {
-                user_id: userid,
                 token: token,
                 type: "signin"
             }

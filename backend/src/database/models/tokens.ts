@@ -1,3 +1,5 @@
+import { DatabaseError } from "sequelize/types";
+
 export default (sequelize, DataTypes) => {
 
     const Token = sequelize.define('Token', {
@@ -13,6 +15,10 @@ export default (sequelize, DataTypes) => {
         token: {
             type: DataTypes.STRING(64),
             allowNull: false
+        },
+        value: {
+            type: DataTypes.TEXT,
+            allowNull: true
         }
     }, 
     {

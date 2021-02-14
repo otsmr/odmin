@@ -13,6 +13,8 @@ import { getTokens, createNewToken } from "./token"
 import { checkUserName } from '../../routes/shared';
 import { checkPasswordDialog } from '../../utils/dialog';
 import EMailNotification from '../../mail/notify';
+import { checkContinueLocation, getServiceByServiceId } from './service';
+import service from '../models/service';
 
 
 export const getUserByID =  async (userid) => {
@@ -70,7 +72,54 @@ const sha256 = (string: string) => {
     return crypto.createHash('sha256').update(string).digest('hex');
 }
 
-export const checkCredentialForSignIn = async (data: { continue: string, username: string, password: string, ipadress: string, twofaToken: string, userAgent: string}, call: {(err: boolean, data?: {
+// 1. create temp code for the url get param
+// 2. create service-based session token
+// TODO: create docs
+async function getBuildedContinueForService (serviceid: string, sessionsToken: string, checkContinueUrl: string ) {
+
+    const service = await getServiceByServiceId(serviceid);
+    
+    if (!service) {
+        console.log("NO SERVICE FOUND");
+        return checkContinueLocation(checkContinueUrl);
+    }
+
+    let continueUrl = service.returnto;
+
+    if (continueUrl.indexOf("?") === -1) {
+        continueUrl += "?";
+    } else {
+        continueUrl += "&";
+    }
+
+    const code = crypto.randomBytes(30).toString('hex');
+    const codeToSessionToken = crypto.randomBytes(30).toString('hex');
+
+    if (!await createNewToken("oauth-temp-code", code, codeToSessionToken)){
+        console.log("oauth-temp-code");
+        return checkContinueLocation(checkContinueUrl); 
+    }
+
+    sessionsToken = serviceid + "::" + sessionsToken;
+
+    if (!await createNewToken("oauth-session-token", codeToSessionToken, sessionsToken)){
+        console.log("oauth-session-token");
+        return checkContinueLocation(checkContinueUrl); 
+    }
+
+    return continueUrl + `code=${code}&continue=${checkContinueUrl}`;
+
+}
+
+export const checkCredentialForSignIn = async (data: {
+    username: string,
+    password: string,
+    ipadress: string,
+    twofaToken: string,
+    userAgent: string,
+    checkContinue: string,
+    serviceid: string | undefined
+}, call: {(err: boolean, data?: {
     credentialsAreOk: boolean,
     isLocked?: boolean,
     cookieToken?: string,
@@ -88,8 +137,7 @@ export const checkCredentialForSignIn = async (data: { continue: string, usernam
     const failed = async () => {
         await createNewToken("signinfailed", sha256(data.ipadress));
         call(false, {
-            credentialsAreOk: false,
-            continue: data.continue
+            credentialsAreOk: false
         });
     }
 
@@ -119,8 +167,7 @@ export const checkCredentialForSignIn = async (data: { continue: string, usernam
         if (data.twofaToken === "") {
             return call(false, {
                 credentialsAreOk: true,
-                isTwoFaUser: true,
-                continue: data.continue
+                isTwoFaUser: true
             });
         }
 
@@ -143,19 +190,35 @@ export const checkCredentialForSignIn = async (data: { continue: string, usernam
 
     }
 
-    const cookieToken = await createNewSession(userInDB.user, data.ipadress, data.userAgent);
-    if (!cookieToken) return call(true);
+    const sessionData = await createNewSession(userInDB.user, data.ipadress, data.userAgent);
+    if (!sessionData) return call(true);
+
+    let continueUrl: string = ""; 
+    if (data.serviceid) {
+        continueUrl = await getBuildedContinueForService(data.serviceid, sessionData.sessionsToken, data.checkContinue);
+    } else {
+        continueUrl = checkContinueLocation(data.checkContinue);
+    }
+
+    console.log(data, continueUrl);
 
     call(false, {
         credentialsAreOk: true,
-        cookieToken,
-        continue: data.continue
+        cookieToken: sessionData.jwt,
+        continue: continueUrl
     });
 
 }
 
 
-export const createNewUser = async (data: { username: string, password: string, continue: string, ipadress: string, userAgent: string }, call: {(err: boolean, data?: { cookieToken: string, continue: string }): void}) => {
+export const createNewUser = async (data: {
+    username: string,
+    password: string,
+    serviceid: string,
+    checkContinue: string,
+    ipadress: string,
+    userAgent: string
+}, call: {(err: boolean, data?: { cookieToken: string, continue: string }): void}) => {
 
     try {
 
@@ -175,16 +238,26 @@ export const createNewUser = async (data: { username: string, password: string, 
                 
             if (!user) throw "Benutzer konnte nicht erstellt werden.";
             
-            const cookieToken = await createNewSession(user, data.ipadress, data.userAgent);
-            if (!cookieToken) return call(true);
+            const sessionData = await createNewSession(user, data.ipadress, data.userAgent);
+            if (!sessionData) return call(true);
+
+            let continueUrl: string = ""; 
+            if (data.serviceid) {
+                continueUrl = await getBuildedContinueForService(data.serviceid, sessionData.sessionsToken, data.checkContinue);
+            } else {
+                continueUrl = checkContinueLocation(data.checkContinue);
+            }
     
-            call(false, { cookieToken, continue: data.continue });
+            call(false, {
+                cookieToken: sessionData.jwt,
+                continue: continueUrl
+            });
 
         });
 
     } catch (e) {
 
-        log.error("database", `createTemporaerUser: ${e.toString()}` );
+        log.error("database", `createNewUser: ${e.toString()}` );
         call(true);
         
     }
@@ -208,7 +281,7 @@ export const checkIsTokanValid = async (jwt_token: string)  => {
         
         const userdb = await getUserByID(jwt_data.user_id);
 
-        const session = await getSessionByToken(jwt_data.user_id, jwt_data.session_token);
+        const session = await getSessionByToken(jwt_data.session_token);
 
         if (session && userdb)  {
 

@@ -8,6 +8,7 @@ interface Service {
     id: number,
     serviceID: string,
     name: string,
+    secret: string,
     createdAt: string,
     homepage: string,
     returnto: string
@@ -204,8 +205,8 @@ export default function (props: {
 
                     <Table
                         className="small-padding"
-                        header={["Name", "ServiceID", "CallBack URL", "Erstellt am", ""]}
-                        data={allServices.map(service => [service.name, service.serviceID, service.returnto, service.createdAt,  (
+                        header={["Name", "ServiceID", "Secret", "CallBack URL", "Erstellt am", ""]}
+                        data={allServices.map(service => [service.name, service.serviceID, service.secret, service.returnto, service.createdAt,  (
                         <div className="td-actions">
                             <button className="btn" onClick={e => setEditService(service)}><i className="fas fa-edit"></i></button>
                             <button className="btn warn" onClick={e => deleteService(service.id)}><i className="fas fa-trash-alt"></i></button>

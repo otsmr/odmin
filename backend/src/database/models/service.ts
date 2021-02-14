@@ -17,6 +17,11 @@ export default (sequelize, DataTypes) => {
             allowNull: false,
             unique: true
         },
+        secret: {
+            type: DataTypes.STRING(64),
+            allowNull: false,
+            unique: true
+        },
         homepage: {
             type: DataTypes.TEXT
         },

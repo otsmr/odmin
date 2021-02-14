@@ -1,5 +1,6 @@
 import { Service } from '../initdb';
 import * as url from 'url';
+import * as crypto from 'crypto';
 import log from "../../utils/logs"
 import { getRandomStringID } from '../../utils/utils';
 
@@ -7,6 +8,7 @@ export interface IService {
     id: number,
     serviceID: string,
     name: string,
+    secret: string,
     createdAt: string,
     homepage: string,
     returnto: string
@@ -15,6 +17,14 @@ export interface IService {
 export const getServiceByName =  async (name: string): Promise<IService | null> => {
 
     const services = await Service.findAll({ where: { name } });
+
+    if (services && services.length > 0) return services[0];
+    return null;
+
+}
+export const getServiceBySecret =  async (secret: string): Promise<IService | null> => {
+
+    const services = await Service.findAll({ where: { secret } });
 
     if (services && services.length > 0) return services[0];
     return null;
@@ -93,6 +103,7 @@ export const updateCreateService =  async (userid: number, service: IService): P
             
             await Service.create({
                 serviceID: getRandomStringID(),
+                secret: crypto.randomBytes(30).toString('hex'),
                 homepage: service.homepage,
                 returnto: service.returnto,
                 name: service.name,

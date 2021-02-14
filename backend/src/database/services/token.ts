@@ -2,13 +2,14 @@
 import { Token } from '../initdb';
 import log from "../../utils/logs"
 
-export const createNewToken = async (name, token) => {
+export const createNewToken = async (name: string, token: string, value: string = "") => {
 
     try {
         
         const tokens = await Token.create({
             token: token,
-            name: name
+            name: name,
+            value: value
         });
 
         if (!tokens) throw "Token konnte nicht erstellt werden.";

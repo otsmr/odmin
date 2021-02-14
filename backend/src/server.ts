@@ -5,6 +5,7 @@ const morgan = require("morgan")
 import * as express from "express"
 import * as socket from "socket.io"
 import * as cookieParser from 'cookie-parser'
+import * as bodyParser from 'body-parser';
 
 import log from "./utils/logs"
 import config from "./utils/config"
@@ -27,6 +28,7 @@ const io = socket();
 
 app.use(morgan("combined", { stream: log.stream }));
 app.use(cookieParser());
+app.use(bodyParser.json());
 
 app.use("/api/v0", apiMiddleware);
 

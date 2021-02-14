@@ -7,6 +7,7 @@ namespace ODMIN {
         private string $secret;
         private string $service_id;
         private string $api_base;
+        private string $signin_base;
 
         public object $session;
 
@@ -15,6 +16,8 @@ namespace ODMIN {
             $this->secret = $config->secret;
             $this->service_id = $config->service_id;
             $this->api_base = $config->api_base;
+            $this->signin_base = $config->signin_base;
+            // TODO: check last /
 
             $this->session = (object) [
                 "token" => "",
@@ -31,14 +34,14 @@ namespace ODMIN {
                 "secret" => $this->secret
             ]);
             
-            if ($session !== NULL) {
-
+            if (!is_null($session)) {
+                
                 try {
-        
+                    
                     $session = json_decode($session);
         
-                    if ($session["session_token"]) {
-                        setcookie("odmin_token", $session["session_token"], time()+3600*30*60, "/");
+                    if ($session->session_token) {
+                        setcookie("odmin_token", $session->session_token, time()+3600*30*60, "/");
                         return true;
                     }
         
@@ -63,15 +66,37 @@ namespace ODMIN {
                 "secret" => $this->secret
             ]);
 
-            if ($user_data === NULL) {
-                setcookie("odmin_token", "", time()-3600);
+            if (is_null($user_data))
                 return false;
+
+            // if ($user_data === NULL) {
+            //     setcookie("odmin_token", "", time()-3600);
+            //     return false;
+            // }
+
+            // TODO: delete_cookie
+
+            try {
+                    
+                $user_data = json_decode($user_data);
+    
+                if (isset($user_data->error) && $user_data->error) {
+                    return false;
+                }
+
+                if (!isset($this->session->user_id)) {
+                    return false;
+                }
+
+                $this->session->user_id = (int) $user_data->user_id;
+                $this->session->user_name = (string) $user_data->user_name;
+                
+                $this->session->token = $token;
+                
+            } catch (Exception $e) {
+                print($e);
             }
-
-            $this->session->token = $token;
-
-            $this->session->user_id = (int) $user_data["user_id"];
-            $this->session->user_name = (string) $user_data["user_name"];
+           
 
             return true;
 
@@ -87,15 +112,17 @@ namespace ODMIN {
 
             $continue = urlencode($continue);
             
-            return $this->api_base . "/signin?serviceid=" . $this->service_id . "&continue=" . $continue;
+            return $this->signin_base . "signin?serviceid=" . $this->service_id . "&continue=" . $continue;
             
         }
         
-        public function get_signout_url (string $contine = "/"): string {
+        public function get_signout_url (string $continue = "/"): string {
             
             $continue = urlencode($continue);
 
-            return $this->api_base . "/api/v0/user/logout/" . $session->token . "?serviceid=" . $this->service_id . "&continue=" . $continue;
+            // TODO: not working
+
+            return $this->api_base . "api/v0/user/logout/" . $this->session->token . "?serviceid=" . $this->service_id . "&continue=" . $continue;
 
         }
 
@@ -104,18 +131,20 @@ namespace ODMIN {
 
     class fetch {
     
-        function post ($url, $data=NULL, $headers = NULL) {
+        function post ($url, $data=NULL) {
+
+            print_r("POST: $url<br>");
     
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         
             if(!empty($data)){
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
             }
         
-            if (!empty($headers)) {
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            }
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json'
+            ));
         
             $response = curl_exec($ch);
         

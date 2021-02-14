@@ -35,9 +35,11 @@ export default (socket, slog) => {
         
         const cookies = cookie.parse(socket.handshake.headers.cookie || "");
         const userJWT = await checkIsTokanValid(cookies.token);
+
+        // FIXME: ? userJWT not defined ?
         
         const notify = await getNotificationsByUserID(user.userid);
-        const session = await getSessionByToken(user.userid, userJWT?.token)
+        const session = await getSessionByToken(userJWT?.token)
                 
         const options = {
             email: notify?.email || "",
