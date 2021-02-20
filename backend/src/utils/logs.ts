@@ -21,11 +21,12 @@ const writeToFile = (name, data) => {
 
     const logFullPath = join(logPath, `${name}.log`);
 
-    if (!existsSync(logFullPath)) writeFileSync(logFullPath, `> Logs mit dem Namen ${name}\n`);
+    if (!existsSync(logFullPath)) writeFileSync(logFullPath, "");
 
     const time = new Date().toString().split(" ").slice(4, 5)[0];
+    const timestamp = new Date().toUTCString();
 
-    appendFileSync(logFullPath, `[${time}] ${data}\n`);
+    appendFileSync(logFullPath, `[${timestamp}] ${data}\n`);
     console.log(`[${time}] ${data}`)
 
 }

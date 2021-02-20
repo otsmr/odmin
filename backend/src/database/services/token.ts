@@ -1,6 +1,49 @@
 
 import { Token } from '../initdb';
 import log from "../../utils/logs"
+import { Op } from 'sequelize';
+
+export async function destroyExpiredTokens (): Promise<boolean> {
+
+    try {
+
+        const tokens = await Token.findAll({
+            where: {
+                [Op.or]: [
+                    { 
+                        name: "oauth-session-token",
+                        createdAt: {
+                            [Op.lt]: new Date((+new Date()) - 5 * 24 * 60 * 60 * 1000) // 5 days
+                        }
+                    },
+                    { 
+                        name: "oauth-session-token",
+                        createdAt: {
+                            [Op.lt]: new Date((+new Date()) - 24 * 60 * 60 * 1000) // 1 day
+                        }
+                    }
+                ]
+            }
+        })
+
+        let tokensRemoved = tokens.length;
+
+        for (const token of tokens) {
+            token.destroy();
+        }
+
+        // if (tokensRemoved > 0) {
+            log.info("cron", `${tokensRemoved} Tokens entfernt.`);
+        // }
+        
+    } catch (error) {
+        log.error("database", `destroyExpiredTokens: ${error.toString()}`);
+        return false;
+    }
+
+    return true;
+}
+
 
 export const createNewToken = async (name: string, token: string, value: string = "") => {
 
@@ -21,6 +64,25 @@ export const createNewToken = async (name: string, token: string, value: string 
     }
 
     return false;
+
+}
+
+export async function destroyTokensByValue (value: string): Promise<boolean> {
+
+    try {
+
+        const tokens = await Token.findAll({ where: { value }});
+
+        for (let token of tokens) {
+            token.destroy();
+        }
+
+    } catch (e) {
+        log.error("database", `destroyTokensByValue: ${e.toString()}` );
+        return false;
+    }
+
+    return true;
 
 }
 
