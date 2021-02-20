@@ -7,8 +7,6 @@ import * as jwt from 'jsonwebtoken';
 import log from "../../utils/logs"
 import config from "../../utils/config"
 
-import fetch from "node-fetch"
-
 export interface JWT_SESSION_TOKEN {
     session_token: string
     user_id: number
@@ -31,10 +29,9 @@ export const createNewSession = async (user: any, ipadress?: string, userAgent?:
 
 
         if (user.saveLog) {
+
             sessions.clientip = ipadress || "";
             sessions.userAgent = userAgent || "";
-
-            console.log("IP", ipadress);
 
             const localDomains = [
                 "::1",
@@ -44,46 +41,46 @@ export const createNewSession = async (user: any, ipadress?: string, userAgent?:
             ]
 
             // use real ip in dev
-            // if (
-            //     config.get("nodeEnv") === "development" && 
-            //     (localDomains.indexOf(ipadress) > -1 || ipadress.startsWith("127.0.0."))    
-            // ) {
-            //     try {
+            if (
+                config.get("nodeEnv") === "development" && 
+                (localDomains.indexOf(ipadress) > -1 || ipadress.startsWith("127.0.0."))    
+            ) {
+                try {
                     
-            //         const resMyIP = await fetch(config.get("ipinfoservice") + "/api/myip");
-            //         const jsonMyIP = await resMyIP.json();
-            //         ipadress = jsonMyIP.ip || "";
-            //         sessions.clientip = ipadress;
+                    const resMyIP = await fetch(config.get("ipinfoservice") + "/api/myip");
+                    const jsonMyIP = await resMyIP.json();
+                    ipadress = jsonMyIP.ip || "";
+                    sessions.clientip = ipadress;
 
-            //     } catch (error) {
-            //         console.error(error);
-            //     }
+                } catch (error) {
+                    console.error(error);
+                }
 
-            // }
+            }
             
-            // try {
+            try {
                 
-            //     const response = await fetch(config.get("ipinfoservice") + "/api/ip", {
-            //         method: 'POST',
-            //         headers: {
-            //           'Accept': 'application/json',
-            //           'Content-Type': 'application/json'
-            //         },
-            //         body: JSON.stringify({
-            //             ip: ipadress
-            //         })
-            //     });
-            //     const responseJSON = await response.json();
+                const response = await fetch(config.get("ipinfoservice") + "/api/ip", {
+                    method: 'POST',
+                    headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ip: ipadress
+                    })
+                });
+                const responseJSON = await response.json();
 
-            //     console.log(responseJSON);
+                console.log(responseJSON);
 
-            //     sessions.city = responseJSON.city;
-            //     sessions.plz = responseJSON.zipcode;
-            //     sessions.country = responseJSON.country_long + ` (${responseJSON.region})`;
+                sessions.city = responseJSON.city;
+                sessions.plz = responseJSON.zipcode;
+                sessions.country = responseJSON.country_long + ` (${responseJSON.region})`;
 
-            // } catch (error) {
-            //     console.log(error);
-            // }
+            } catch (error) {
+                console.log(error);
+            }
 
         }
 

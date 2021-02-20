@@ -111,8 +111,8 @@ namespace ODMIN {
         public function get_signin_url (string $continue = "/"): string {
 
             $continue = urlencode($continue);
-            
-            return $this->signin_base . "signin?serviceid=" . $this->service_id . "&continue=" . $continue;
+        
+            return $this->api_base . "api/v0/service/user/sigin?serviceid=" . $this->service_id . "&continue=" . $continue;
             
         }
         
@@ -122,7 +122,7 @@ namespace ODMIN {
 
             // TODO: not working
 
-            return $this->api_base . "api/v0/user/logout/" . $this->session->token . "?serviceid=" . $this->service_id . "&continue=" . $continue;
+            return $this->api_base . "api/v0/user/logout/" . $this->session->token . "/" . $this->service_id . "?continue=" . $continue;
 
         }
 

@@ -35,7 +35,9 @@ $odmin->init_session_from_cookie();
     <a href="<?php echo $odmin->get_signout_url(); ?>">Abmelden</a>
 
 <?php else: ?>
+
     <a href="<?php echo $odmin->get_signin_url("/privat.php"); ?>">Anmelden</a>
+    
 <?php endif; ?>
 
 </body>

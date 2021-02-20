@@ -75,7 +75,7 @@ const sha256 = (string: string) => {
 // 1. create temp code for the url get param
 // 2. create service-based session token
 // TODO: create docs
-async function getBuildedContinueForService (serviceid: string, sessionsToken: string, checkContinueUrl: string ) {
+export async function getBuildedContinueForService (serviceid: string, sessionsToken: string, checkContinueUrl: string ) {
 
     const service = await getServiceByServiceId(serviceid);
     
@@ -285,7 +285,8 @@ export const checkIsTokanValid = async (jwt_token: string)  => {
 
         if (session && userdb)  {
 
-            if (session.valid !== true) return null;
+            if (session.valid !== true)
+                return null;
             
             return {
                 id: userdb.id,
@@ -350,7 +351,7 @@ export const getUserByUsername = async (username: string) => {
         return { err: false, user: user[0] };
         
     } catch (e) {
-        log.error("getByUserName", e);
+        log.error("database", `getByUserName: ${e.toString()}`);
         return { err: true, msg: ""};
     }
 

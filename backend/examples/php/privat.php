@@ -36,7 +36,9 @@ if (!$odmin->is_logged_in()) {
 
     <a href="./index.php">Zurück</a>
 
-    <p>Mein geheimes Passwort: 12345678</p>
+    <h1>Hallo <?php echo html_entity_decode($odmin->session->user_name); ?>!</h1>
+
+    <p>Dein geheimes Passwort ist 12345678.</p>
     
 </body>
 </html>
