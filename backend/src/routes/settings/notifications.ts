@@ -144,7 +144,7 @@ export default (socket: any, slog: {(msg: string): void}) => {
 
             const code = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
 
-            if (config.get("nodeEnv") === "development") {
+            if (config.get("runmode") === "development") {
                 console.log("E-Mail-Code: ", code);
             }
 

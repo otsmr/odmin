@@ -11,7 +11,7 @@ import log from "./utils/logs"
 import config from "./utils/config"
 
 // used in log.ts
-globalThis.isDev = (config.get("nodeEnv") === "development") ? true : false;
+globalThis.isDev = (config.get("runmode") === "development") ? true : false;
 
 import database from "./database/initdb"
 
@@ -66,7 +66,8 @@ app.use((req, res) => {
 io.on('connection', (socket) => {
 
     function slog (msg: string) {
-        log.info("socket", `${msg} - ${socket.conn.id}`);
+        if (config.get("runmode") === "development")
+            log.info("socket", `${msg} - ${socket.conn.id}`);
     }
 
     slog(`Neue Verbindung mit "${socket.handshake.headers.host}"`);
