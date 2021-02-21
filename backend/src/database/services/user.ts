@@ -14,7 +14,6 @@ import { checkUserName } from '../../routes/shared';
 import { checkPasswordDialog } from '../../utils/dialog';
 import EMailNotification from '../../mail/notify';
 import { checkContinueLocation, getServiceByServiceId } from './service';
-import service from '../models/service';
 
 
 export const getUserByID =  async (userid) => {

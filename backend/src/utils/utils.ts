@@ -1,4 +1,4 @@
-
+import * as ipaddr from 'ipaddr.js'
 
 export const chunkArray = (array: string, size: number) => {
 
@@ -9,7 +9,6 @@ export const chunkArray = (array: string, size: number) => {
 
 }
 
-
 export const gurlp = ( name: string, url: string ) => {
 
     name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
@@ -18,14 +17,12 @@ export const gurlp = ( name: string, url: string ) => {
 
 }
 
-
 export const validateEmail = (email: string) => {
 
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
 
 }
-
 
 export const getClientIPFromSocket = (socket) => {
 
@@ -36,7 +33,6 @@ export const getClientIPFromSocket = (socket) => {
 
 }
 
-
 export function getRandomStringID (length: number = 10) {
 
     let string = "";
@@ -46,5 +42,26 @@ export function getRandomStringID (length: number = 10) {
     }
     
     return string;   
+
+}
+
+export function pseudoIP (ip: string): string {
+
+    if (ip.indexOf(":") > -1) { // IPv6
+
+        let addrArray  = ipaddr.parse(ip).toByteArray();
+
+        for (let i = 7; i < 16; i++) 
+            addrArray[i] = 0;
+
+        ip = ipaddr.fromByteArray(addrArray).toString();
+
+    } else { // IPv4
+
+        ip = ip.split(".").slice(0, 2).join(".") + ".*";
+
+    }
+
+    return ip;
 
 }

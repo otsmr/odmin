@@ -7,6 +7,8 @@ import * as jwt from 'jsonwebtoken';
 import log from "../../utils/logs"
 import config from "../../utils/config"
 
+import fetch from "node-fetch"
+
 export interface JWT_SESSION_TOKEN {
     session_token: string
     user_id: number

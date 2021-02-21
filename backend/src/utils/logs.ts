@@ -43,7 +43,7 @@ const error = (name, data) => {
 
 const stream = {
     write: (message: string, encoding) => {
-        writeToFile(`stream`, message);
+        writeToFile(`stream`, message.slice(0, message.lastIndexOf("\n")));
     }
 }
 

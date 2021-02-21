@@ -199,13 +199,9 @@ export default (socket: any, slog: {(msg: string): void}) => {
                             }
                         }
                     })
-
                 }
             })
-
         })
-        
-        
     })
     
     .on("/settings/notifications/updatetypes", async (data: {
@@ -233,9 +229,7 @@ export default (socket: any, slog: {(msg: string): void}) => {
             await updateNotifications(socket.user.id, data);
             call(false, true);
         }
-
         
     })
-
 
 }

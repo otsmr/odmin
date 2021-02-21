@@ -1,16 +1,17 @@
 import { createServer } from 'http'
 
-const morgan = require("morgan")
 
+import morgan = require("morgan")
 import * as express from "express"
 import * as socket from "socket.io"
 import * as cookieParser from 'cookie-parser'
-import * as bodyParser from 'body-parser';
+import * as bodyParser from 'body-parser'
 
 import log from "./utils/logs"
 import config from "./utils/config"
 
-globalThis.isDev = config.get("isDev");
+// used in log.ts
+globalThis.isDev = (config.get("nodeEnv") === "development") ? true : false;
 
 import database from "./database/initdb"
 
@@ -20,13 +21,29 @@ import useSignSocket from "./routes/sign"
 import useProfileSocket from "./routes/profile"
 import useSettingsSocket from "./routes/settings/index"
 import useAdminSocket from "./routes/admin/index"
-import { IAPI_EROR_MESSAGE } from './interfaces/api-response'
+import { pseudoIP } from './utils/utils'
 
+interface IAPI_EROR_MESSAGE {
+    error: boolean
+    message?: string
+}
 
 const app = express();
 const io = socket();
 
-app.use(morgan("combined", { stream: log.stream }));
+morgan.token('pseudo-remote-addr', function getId (req: any) {
+    return req["pseudo-remote-addr"];
+})
+
+app.use((req, res, next) => {    
+    req["pseudo-remote-addr"] = (config.get("log:ip-addresses-pseudonymize")) ? pseudoIP(req.ip): req.ip;
+    next()
+})
+
+app.use(morgan(`:pseudo-remote-addr - [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length]`, (
+    { stream: log.stream } as any
+)));
+
 app.use(cookieParser());
 app.use(bodyParser.json());
 
@@ -64,11 +81,6 @@ io.on('connection', (socket) => {
     useAdminSocket(socket, slog);
 
 });
-
-
-
-
-
 
 const port = config.get("server:port") || 8080;
 app.set('port', port);
