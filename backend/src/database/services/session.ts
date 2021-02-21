@@ -72,14 +72,12 @@ export const createNewSession = async (user: any, ipadress?: string, userAgent?:
                 });
                 const responseJSON = await response.json();
 
-                console.log(responseJSON);
-
                 sessions.city = responseJSON.city;
                 sessions.plz = responseJSON.zipcode;
                 sessions.country = responseJSON.country_long + ` (${responseJSON.region})`;
 
             } catch (error) {
-                console.log(error);
+                log.error("iplookup", `ERROR: ${error}`);
             }
 
         }
@@ -113,13 +111,9 @@ export const disableSessionByToken = async (token: string) => {
 
     try {
 
-        console.log(token);
-
         const session = await Session.findAll({
             where: { token }
         });
-
-        console.log(session);
 
         if (session.length !== 1) return false;
 

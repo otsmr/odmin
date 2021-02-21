@@ -36,7 +36,6 @@ export const updateNotifications = async (userid: number, data: {
         let notify = await user.getNotifications();
 
         if (notify.length === 0) {
-            console.log("Create", userid);
             await Notifications.create({
                 ...data,
                 user_id: userid

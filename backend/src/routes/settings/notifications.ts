@@ -109,104 +109,101 @@ export default (socket: any, slog: {(msg: string): void}) => {
     
     .on("/settings/notifications/updatecommunicationtypes", (data: {
         email?: string
-    }, call: {(err: boolean, data: {
+    }, call: {(err: boolean, data?: {
         problemWithInput?: IInputProblem,
         updateSuccess: boolean
     }): void}) => {
 
         slog("API /settings/notifications/updatecommunicationtypes");
 
-        if (typeof data.email === "string") {
+        if (data.email !== "" && !validateEmail(data.email)) {
+            return call(false, {
+                updateSuccess: false,
+                problemWithInput: {
+                    inputValue: data.email,
+                    inputid: "email",
+                    msg: "Keine gültige E-Mail"
+                }
+            });
+        }
 
-            if (data.email !== "" && !validateEmail(data.email)) {
+        checkPasswordDialog(socket, "E-Mail-Adresse ändern", async (status: boolean) => {
+        
+            if (!status) return call(false, {
+                updateSuccess: false
+            });
+
+            if (data.email === "") {
+                await updateNotifications(socket.user.id, {
+                    email: data.email
+                });
                 return call(false, {
-                    updateSuccess: false,
-                    problemWithInput: {
-                        inputValue: data.email,
-                        inputid: "email",
-                        msg: "Keine gültige E-Mail"
-                    }
+                    updateSuccess: true
                 });
             }
 
+            const code = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
 
-            checkPasswordDialog(socket, "E-Mail-Adresse ändern", async (status: boolean) => {
-            
-                if (!status) return call(false, {
-                    updateSuccess: false
-                });
+            if (config.get("nodeEnv") === "development") {
+                console.log("E-Mail-Code: ", code);
+            }
 
-                if (data.email === "") {
-                    await updateNotifications(socket.user.id, {
-                        email: data.email
-                    });
-                    return call(false, {
-                        updateSuccess: true
-                    });
-                }
-
-                const code = Math.floor(Math.random()*(999999 - 100000 + 1) + 100000);
-
-                console.log(code);
-
-                sendMail({
-                    type: "newEmailAddress",
-                    subject: "E-Mail-Adresse bestätigen",
-                    to: data.email,
-                    from: config.get("email:account"),
-                    replace: {
-                        newMail: data.email,
-                        code
-                    },
-                    success: (err) => {
-                        
-                        if (err) {
-                            alert(socket, {
-                                title: "Fehler: E-Mail nicht versendet",
-                                text: "Es konnte keine Bestätigungs-E-Mail versendet werden. Bitte E-Mail-Adresse überprüfen."
-                            });
-                            return call(true, { updateSuccess: false });
-                        }
-
-                        prompt(socket, {
-                            title: "E-Mail-Adresse bestätigen",
-                            text: "",
-                            input: {
-                                placeholder: "Bestätigungscode",
-                                type: "text"
-                            },
-                            onCancel: () => {
-                                call(false, {
-                                    updateSuccess: false
-                                });
-                            },
-                            onSuccess: async (next, insertCode: string) => {
-                                if (code === parseInt(insertCode)) {
-                                    await updateNotifications(socket.user.id, {
-                                        email: data.email
-                                    });
-                                    call(false, {
-                                        updateSuccess: true
-                                    });
-                                    next({success: true})
-                                } else {
-                                    next({success: false,
-                                        problemWithInput: {
-                                            inputid: "input",
-                                            inputValue: insertCode,
-                                            msg: "Der Bestätigungscode ist falsch"
-                                        }
-                                    })
-                                }
-                            }
-                        })
-
+            sendMail({
+                type: "newEmailAddress",
+                subject: "E-Mail-Adresse bestätigen",
+                to: data.email,
+                from: config.get("email:account"),
+                replace: {
+                    newMail: data.email,
+                    code
+                },
+                success: (err) => {
+                    
+                    if (err) {
+                        alert(socket, {
+                            title: "Fehler: E-Mail nicht versendet",
+                            text: "Es konnte keine Bestätigungs-E-Mail versendet werden. Bitte E-Mail-Adresse überprüfen."
+                        });
+                        return call(true, { updateSuccess: false });
                     }
-                })
 
+                    prompt(socket, {
+                        title: "E-Mail-Adresse bestätigen",
+                        text: "",
+                        input: {
+                            placeholder: "Bestätigungscode",
+                            type: "text"
+                        },
+                        onCancel: () => {
+                            call(false, {
+                                updateSuccess: false
+                            });
+                        },
+                        onSuccess: async (next, insertCode: string) => {
+                            if (code === parseInt(insertCode)) {
+                                await updateNotifications(socket.user.id, {
+                                    email: data.email
+                                });
+                                call(false, {
+                                    updateSuccess: true
+                                });
+                                next({success: true})
+                            } else {
+                                next({success: false,
+                                    problemWithInput: {
+                                        inputid: "input",
+                                        inputValue: insertCode,
+                                        msg: "Der Bestätigungscode ist falsch"
+                                    }
+                                })
+                            }
+                        }
+                    })
+
+                }
             })
 
-        }
+        })
         
         
     })

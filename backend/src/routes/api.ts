@@ -20,15 +20,17 @@ router.get("/cron", async (req: any, res: any, next: any) => {
 
     let timeStopped = +new Date() - start;
 
-    log.info("cron", `Cronjob nach ${timeStopped} ms erfolgreich beendet.`);
-
+    
     if (!sucess) {
         res.status(500);
+        log.error("cron", `Fehler beim Cronjob.`);
         return res.send(JSON.stringify({
             error: true
         }))
     }
 
+    log.info("cron", `Cronjob nach ${timeStopped} ms erfolgreich beendet.`);
+    
     return res.send(JSON.stringify({
         error: false,
         timeInMS: timeStopped

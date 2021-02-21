@@ -80,7 +80,6 @@ export async function getBuildedContinueForService (serviceid: string, sessionsT
     const service = await getServiceByServiceId(serviceid);
     
     if (!service) {
-        console.log("NO SERVICE FOUND");
         return checkContinueLocation(checkContinueUrl);
     }
 
@@ -96,14 +95,12 @@ export async function getBuildedContinueForService (serviceid: string, sessionsT
     const codeToSessionToken = crypto.randomBytes(30).toString('hex');
 
     if (!await createNewToken("oauth-temp-code", code, codeToSessionToken)){
-        console.log("oauth-temp-code");
         return checkContinueLocation(checkContinueUrl); 
     }
 
     sessionsToken = serviceid + "::" + sessionsToken;
 
     if (!await createNewToken("oauth-session-token", codeToSessionToken, sessionsToken)){
-        console.log("oauth-session-token");
         return checkContinueLocation(checkContinueUrl); 
     }
 
@@ -199,8 +196,6 @@ export const checkCredentialForSignIn = async (data: {
     } else {
         continueUrl = checkContinueLocation(data.checkContinue);
     }
-
-    console.log(data, continueUrl);
 
     call(false, {
         credentialsAreOk: true,
