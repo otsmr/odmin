@@ -64,18 +64,16 @@ namespace ODMIN {
             if(isset($_GET['continue']) && $_GET['continue'] !== "null") {
 
                 $continue = (string) urldecode((string) $_GET['continue']);
-            
-                //! CHECK is this secure (only relative urls!)
                 
-                if ($continue[0] !== "/") to_default();
                 if (
-                    strrpos($continue, "http:") !== false ||
-                    strrpos($continue, "https:") !== false
-                ) to_default();
-            
-                // print("Location: $continue");
-                header("Location: $continue");
-                die();
+                    ($continue[0] === "/" || $continue[0] === ".") &&
+                    strrpos($continue, "http:") === false &&
+                    strrpos($continue, "https:") === false
+                ) {
+                    // print("Location: $continue");
+                    header("Location: $continue");
+                    die();
+                }
             
             }
 
@@ -160,7 +158,7 @@ namespace ODMIN {
     
         function post ($url, $data=NULL) {
 
-            print_r("POST: $url<br>");
+            // print_r("POST: $url<br>");
     
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

@@ -1,32 +1,18 @@
 <?php 
 
-require_once "config.php";
-require_once "odmin/odmin.php";
-
-$odmin = new \ODMIN\OAuth((object) [
-    "secret" => $config->odmin_secret,
-    "service_id" => $config->odmin_service_id,
-    "api_base" => $config->odmin_base_url
-]);
+require_once "odmin/init.php";
 
 $odmin->init_session_from_cookie();
 
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Odmin OAuth-Test</title>
-
-    <style>
-        body { background: #111; color: #aaa; }
-    </style>
-
 </head>
-<body>
+<body style="background: #111; color: #aaa;">
 
 <?php if ($odmin->is_logged_in()): ?>
 
