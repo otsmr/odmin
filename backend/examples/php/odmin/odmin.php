@@ -7,7 +7,6 @@ namespace ODMIN {
         private string $secret;
         private string $service_id;
         private string $api_base;
-        private string $signin_base;
 
         public object $session;
 
@@ -16,8 +15,6 @@ namespace ODMIN {
             $this->secret = $config->secret;
             $this->service_id = $config->service_id;
             $this->api_base = $config->api_base;
-            $this->signin_base = $config->signin_base;
-            // TODO: check last /
 
             $this->session = (object) [
                 "token" => "",
@@ -41,17 +38,48 @@ namespace ODMIN {
                     $session = json_decode($session);
         
                     if ($session->session_token) {
-                        setcookie("odmin_token", $session->session_token, time()+3600*30*60, "/");
+                        setcookie("odmin_token", $session->session_token, time()+3600*30*60, "/", "", true, true);
                         return true;
                     }
         
                 } catch (Exception $e) {
-                    print($e);
+                    // print($e);
                 }
             
             }
             
             return false;         
+
+        }
+
+        public function handle_continue_location (string $default_location) : void {
+
+            function to_default () {
+                global $default_location;
+                // print("Location: $default_location");
+                header("Location: $default_location");
+                die();
+            }
+            
+            if(isset($_GET['continue']) && $_GET['continue'] !== "null") {
+
+                $continue = (string) urldecode((string) $_GET['continue']);
+            
+                //! CHECK is this secure (only relative urls!)
+                
+                if ($continue[0] !== "/") to_default();
+                if (
+                    strrpos($continue, "http:") !== false ||
+                    strrpos($continue, "https:") !== false
+                ) to_default();
+            
+                // print("Location: $continue");
+                header("Location: $continue");
+                die();
+            
+            }
+
+            to_default();
 
         }
 
@@ -66,15 +94,10 @@ namespace ODMIN {
                 "secret" => $this->secret
             ]);
 
-            if (is_null($user_data))
+            if (is_null($user_data)) {
+                $this->handle_logout();
                 return false;
-
-            // if ($user_data === NULL) {
-            //     setcookie("odmin_token", "", time()-3600);
-            //     return false;
-            // }
-
-            // TODO: delete_cookie
+            }
 
             try {
                     
@@ -102,6 +125,12 @@ namespace ODMIN {
 
         }
 
+        public function handle_logout (int $status) : void {
+
+            setcookie("odmin_token", "", time()-3600, "/", "", true, true);
+
+        }
+
         public function is_logged_in () : bool {
 
             return ($this->session->token === "") ? false : true;
@@ -119,8 +148,6 @@ namespace ODMIN {
         public function get_signout_url (string $continue = "/"): string {
             
             $continue = urlencode($continue);
-
-            // TODO: not working
 
             return $this->api_base . "api/v0/user/logout/" . $this->session->token . "/" . $this->service_id . "?continue=" . $continue;
 

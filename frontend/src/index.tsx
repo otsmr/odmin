@@ -100,10 +100,6 @@ function App () {
                             </Route>
                             <Route path="/admin" component={Admin}/>
                             
-                            <Route path="/signin" >
-                                {/* // TODO: service -> redirect  */}
-                            </Route>
-
                             <Route path="*">
                                 <Redirect to="/overview"/>
                             </Route>

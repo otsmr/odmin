@@ -1,13 +1,12 @@
 <?php 
 
 require_once "config.php";
-require_once "odmin.php";
+require_once "odmin/odmin.php";
 
 $odmin = new \ODMIN\OAuth((object) [
     "secret" => $config->odmin_secret,
     "service_id" => $config->odmin_service_id,
-    "api_base" => $config->odmin_base_url,
-    "signin_base" => $config->odmin_signin_base
+    "api_base" => $config->odmin_base_url
 ]);
 
 $odmin->init_session_from_cookie();

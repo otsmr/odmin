@@ -1,6 +1,4 @@
 import { createServer } from 'http'
-
-
 import morgan = require("morgan")
 import * as express from "express"
 import * as socket from "socket.io"
@@ -9,24 +7,18 @@ import * as bodyParser from 'body-parser'
 
 import log from "./utils/logs"
 import config from "./utils/config"
+import { pseudoIP } from './utils/utils'
 
 // used in log.ts
 globalThis.isDev = (config.get("runmode") === "development") ? true : false;
 
 import database from "./database/initdb"
-
 import apiMiddleware from "./routes/api"
-
 import useSignSocket from "./routes/sign"
 import useProfileSocket from "./routes/profile"
 import useSettingsSocket from "./routes/settings/index"
 import useAdminSocket from "./routes/admin/index"
-import { pseudoIP } from './utils/utils'
 
-interface IAPI_EROR_MESSAGE {
-    error: boolean
-    message?: string
-}
 
 const app = express();
 const io = socket();
@@ -40,7 +32,7 @@ app.use((req, res, next) => {
     next()
 })
 
-app.use(morgan(`:pseudo-remote-addr - [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length]`, (
+app.use(morgan(`:pseudo-remote-addr - ":method :url HTTP/:http-version" :status :res[content-length]`, (
     { stream: log.stream } as any
 )));
 
@@ -54,12 +46,10 @@ app.use((req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.status(403);
 
-    let response: IAPI_EROR_MESSAGE = {
+    return res.send(JSON.stringify({
         error: true,
         message: "403 Forbidden"
-    }
-
-    return res.send(JSON.stringify(response))
+    }))
 
 })
 

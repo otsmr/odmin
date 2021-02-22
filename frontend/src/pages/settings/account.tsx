@@ -7,6 +7,8 @@ import socket from '../../utils/socket';
 
 import { Input, IInputProblem } from "../../components/input"
 
+let extendedLogCurrentlyLoaded = false;
+
 export default function (props: {
     username: string
 }) {
@@ -20,9 +22,15 @@ export default function (props: {
     const [problemWithInput, setProblemWithInput] = useState({ inputid: "", msg: "", inputValue: "" });
 
     useEffect(()=>{
+
+        if (extendedLogCurrentlyLoaded) {
+            extendedLogCurrentlyLoaded = false;
+            return;
+        }
         
         socket.emit("/settings/account/getextendedlogstatus", (err: boolean, extendedLogStatus: boolean) => {
             if (err) return console.error(err);
+            extendedLogCurrentlyLoaded = true;
             setExtendedLog(extendedLogStatus);
         })
         
