@@ -11,6 +11,7 @@ export interface ISession {
     plz: string,
     city: string,
     country: string,
+    valid: boolean,
     expiresInMoment: string;
     createdAtMoment: string;
 }
@@ -32,7 +33,7 @@ export function TableSessions (props: {
         <Table
             className="small-padding"
             header={["IP-Adresse", "Standort", "Browser", "Betriebssystem", "Verfällt in", "Erstellt vor", ""]}
-            data={props.sessions.map(s => [s.clientip, (s.country) ? `${s.plz } ${s.city} - ${s.country}` : "-", s.browser, s.os, s.expiresInMoment, s.createdAtMoment, (props.actions) ? props.actions(s) : ""] )}
+            data={props.sessions.map(s => [s.clientip, (s.country) ? `${s.plz } ${s.city} - ${s.country}` : "-", s.browser, s.os, (s.valid) ? s.expiresInMoment : "Abgemeldet", s.createdAtMoment, (props.actions) ? props.actions(s) : ""] )}
             />
     )
 }

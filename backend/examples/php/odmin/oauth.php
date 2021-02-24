@@ -2,7 +2,7 @@
 
 require_once "init.php";
 
-$default_location = "./../index.php";
+$default_location = "./../../index.php";
 
 if (isset($_GET["logout"])) {
 

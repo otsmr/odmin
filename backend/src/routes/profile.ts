@@ -20,6 +20,7 @@ export interface ISession {
     plz: string,
     city: string,
     country: string,
+    valid: boolean,
     expiresInMoment: string;
     createdAtMoment: string;
 }
@@ -50,22 +51,29 @@ export default (socket, slog) => {
                 plz: "",
                 city: "",
                 country: "",
+                valid: false,
                 createdAtMoment: ""
             }
         }
         
         if (session && session.type) {
 
-            const ua = new UAParser(session.userAgent);
-
             options.lastSession = {
                 clientip: (session.clientip || "-"),
-                browser: ua.getBrowser().name + " " + ua.getBrowser().version,
-                os: ua.getOS().name + " " + (ua.getOS().version || ""),
+                browser: "-",
+                os: "-",
+                valid: session.valid,
                 plz: session.plz,
                 country: session.country,
                 city: session.city,
                 createdAtMoment: moment(new Date(session.createdAt).getTime()).format("DD.MM.YYYY HH:mm")
+            }
+
+            const ua = new UAParser(session.userAgent);
+
+            if (ua.getBrowser().name) {
+                options.lastSession.browser = ua.getBrowser().name + " " + ua.getBrowser().version;
+                options.lastSession.os = ua.getOS().name + " " + (ua.getOS().version || "");
             }
 
         }
@@ -105,19 +113,27 @@ export default (socket, slog) => {
             if (new Date(sessionInDb.expiresIn).getTime() < new Date().getTime()) 
                 expiresInMoment = "Abgelaufen";
 
-            const ua = new UAParser(sessionInDb.userAgent);
-
-            sessions.push({
+            let session = {
                 id: sessionInDb.id,
                 clientip: (sessionInDb.clientip || "-"),
-                browser: ua.getBrowser().name + " " + ua.getBrowser().version,
-                os: ua.getOS().name + " " + (ua.getOS().version || ""),
+                browser: "-",
+                os: "-",
+                valid: sessionInDb.valid,
                 plz: sessionInDb.plz,
                 city: sessionInDb.city,
                 country: sessionInDb.country,
                 expiresInMoment: expiresInMoment,
                 createdAtMoment: moment(new Date(sessionInDb.createdAt).getTime()).fromNow(true)
-            });
+            }
+
+            const ua = new UAParser(sessionInDb.userAgent);
+
+            if (ua.getBrowser().name) {
+                session.browser = ua.getBrowser().name + " " + ua.getBrowser().version;
+                session.os = ua.getOS().name + " " + (ua.getOS().version || "");
+            }
+
+            sessions.push(session);
 
         }
 

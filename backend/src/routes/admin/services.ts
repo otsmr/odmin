@@ -1,5 +1,6 @@
 import * as moment from "moment"
 import { getAllServices, getServiceByName, updateCreateService, IService, removeServiceById, getServiceById } from "../../database/services/service";
+import config from "../../utils/config";
 import { confirm } from "../../utils/dialog";
 
 interface IInputProblem { inputid: string, msg: string, inputValue: string }
@@ -15,22 +16,26 @@ async function checkAndSaveService (userid: number, service: IService, inputPref
 
     service.name = service.name.replace(/[^a-zA-Z0-9_ ]/g, "");
 
-    if (!service.homepage.startsWith("https://")) return call(false, {
-        createSucesss: false,
-        problemWithInput: {
-            inputid: inputPrefix + "homepage",
-            inputValue: service.homepage,
-            msg: "Webseite muss mit https:// beginnen"
-        }
-    }); 
-    if (!service.returnto.startsWith("https://")) return call(false, {
-        createSucesss: false,
-        problemWithInput: {
-            inputid: inputPrefix + "returnto",
-            inputValue: service.returnto,
-            msg: "CallBack URL muss mit https:// beginnen"
-        }
-    }); 
+    if (config.get("runmode") !== "development") {
+
+        if (!service.homepage.startsWith("https://")) return call(false, {
+            createSucesss: false,
+            problemWithInput: {
+                inputid: inputPrefix + "homepage",
+                inputValue: service.homepage,
+                msg: "Webseite muss mit https:// beginnen"
+            }
+        }); 
+        if (!service.returnto.startsWith("https://")) return call(false, {
+            createSucesss: false,
+            problemWithInput: {
+                inputid: inputPrefix + "returnto",
+                inputValue: service.returnto,
+                msg: "CallBack URL muss mit https:// beginnen"
+            }
+        });
+
+    }
 
     const success = await updateCreateService(userid, service);
 
