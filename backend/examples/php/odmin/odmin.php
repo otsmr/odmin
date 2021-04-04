@@ -101,6 +101,11 @@ namespace ODMIN {
                     
                 $user_data = json_decode($user_data);
     
+				if (is_null($user_data)) {
+					$this->handle_logout();
+					return false;
+				}
+    
                 if (isset($user_data->error) && $user_data->error) {
                     return false;
                 }
@@ -116,6 +121,7 @@ namespace ODMIN {
                 
             } catch (Exception $e) {
                 print($e);
+				return false;
             }
            
 
@@ -123,9 +129,10 @@ namespace ODMIN {
 
         }
 
-        public function handle_logout (int $status) : void {
+        public function handle_logout (int $status = 0) : void {
 
             setcookie("odmin_token", "", time()-3600, "/", "", true, true);
+			$this->session->token = "";
 
         }
 
@@ -156,7 +163,7 @@ namespace ODMIN {
 
     class fetch {
     
-        function post ($url, $data=NULL) {
+        static function post ($url, $data=NULL) {
 
             // print_r("POST: $url<br>");
     
