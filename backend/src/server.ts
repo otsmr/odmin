@@ -18,6 +18,8 @@ import useSignSocket from "./routes/sign"
 import useProfileSocket from "./routes/profile"
 import useSettingsSocket from "./routes/settings/index"
 import useAdminSocket from "./routes/admin/index"
+import { readFileSync } from 'fs'
+import { join } from 'path'
 
 
 const app = express();
@@ -41,15 +43,25 @@ app.use(bodyParser.json());
 
 app.use("/api/v0", apiMiddleware);
 
+app.use("/:a/:b/:c/:d", express.static(__dirname + '/public'));
+app.use("/:a/:b/:c", express.static(__dirname + '/public'));
+app.use("/:a/:b", express.static(__dirname + '/public'));
+app.use("/:a", express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/public'));
+
 app.use((req, res) => {
 
-    res.setHeader('Content-Type', 'application/json');
-    res.status(403);
+    const indexHtml = readFileSync(join(__dirname, '/public/index.html')).toString();
 
-    return res.send(JSON.stringify({
-        error: true,
-        message: "403 Forbidden"
-    }))
+    return res.send(indexHtml);
+
+    // res.setHeader('Content-Type', 'application/json');
+    // res.status(403);
+
+    // return res.send(JSON.stringify({
+    //     error: true,
+    //     message: "403 Forbidden"
+    // }))
 
 })
 

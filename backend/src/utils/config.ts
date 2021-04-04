@@ -10,7 +10,7 @@ import * as nconf from "nconf";
 
 export default new class {
 
-    defaultConfigPath: string = join(__dirname, "/../../config.json")
+    defaultConfigPath: string = join(__dirname, "/../config.json")
 
     constructor () {
 

@@ -16,7 +16,7 @@ const checkFolder = (dir: string) => {
 
 const writeToFile = (name, data) => {
 
-    const logPath = join(__dirname, "/../../logs/");
+    const logPath = join(__dirname, "/../logs/");
     checkFolder(logPath);
 
     const logFullPath = join(logPath, `${name}.log`);
@@ -27,8 +27,11 @@ const writeToFile = (name, data) => {
     const timestamp = new Date().toUTCString();
 
     appendFileSync(logFullPath, `[${timestamp}] ${data}\n`);
-    console.log(`[${time}] ${data}`)
 
+    if (globalThis.isDev) {
+        console.log(`[${time}] ${data}`)
+    }
+    
 }
 
 const debug = (name, data) => {

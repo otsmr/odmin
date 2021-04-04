@@ -11,7 +11,7 @@
     "homepage": "./",
     "scripts": {
         "dev": "concurrently \"cpx \\\"src/**/*.{html,json}\\\" build --watch --clean\" \"tsc --watch\" \"nodemon build/server.js\"",
-        "build": "typescript"
+        "build": "tsc"
     },
     "dependencies": {
         "base64url": "^3.0.1",
@@ -37,7 +37,6 @@
         "uuid-parse": "^1.1.0"
     },
     "devDependencies": {
-        "@types/nodemailer": "^6.4.0",
         "@types/bluebird": "^3.5.30",
         "@types/cookie": "^0.3.3",
         "@types/cookie-parser": "^1.4.2",
@@ -47,12 +46,13 @@
         "@types/nconf": "^0.10.0",
         "@types/node": "^13.9.3",
         "@types/node-fetch": "^2.5.7",
+        "@types/nodemailer": "^6.4.0",
         "@types/socket.io": "^2.1.13",
         "@types/speakeasy": "^2.0.5",
         "@types/ua-parser-js": "^0.7.33",
         "@types/validator": "^12.0.1",
-        "nodemon": "^2.0.7",
         "concurrently": "^5.2.0",
+        "nodemon": "^2.0.7",
         "socket.io-client": "^2.3.0",
         "typescript": "^3.8.3"
     }

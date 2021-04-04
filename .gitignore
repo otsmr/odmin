@@ -1,11 +1,14 @@
 node_modules/
 build/
+logs/
+mysql-database/
+*.zip
 
 # Backend
 backend/logs/
 backend/database/
-backend/config.json
-backend/config.changed.json
+backend/src/config.json
+backend/src/config.changed.json
 
 
 # Frontend

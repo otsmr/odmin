@@ -87,6 +87,7 @@ export default (socket: any, slog: {(msg: string): void}) => {
                     id: session.id,
                     clientip: (session.clientip || "-"),
                     plz: session.plz,
+                    valid: session.valid,
                     browser: ua.getBrowser().name + " " + ua.getBrowser().version,
                     os: ua.getOS().name + " " + (ua.getOS().version || ""),
                     createdAtMoment: getHumanTime(session.createdAt),
