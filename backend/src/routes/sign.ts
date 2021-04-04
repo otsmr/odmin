@@ -1,8 +1,13 @@
-import { getUserByUsername, createNewUser, checkCredentialForSignIn, checkUserIsLocked, checkIsTokanValid } from "../database/services/user";
+import { getUserByUsername, createNewUser, checkCredentialForSignIn, checkUserIsLocked } from "../database/services/user";
 import { getToken } from "../database/services/token";
 import { getServiceByServiceId } from "../database/services/service";
 import { getUserByCookie } from "./shared";
 import config from "../utils/config";
+
+function getClientIPFromSocket (socket) {
+    let ip = socket.handshake.headers['x-forwarded-for']?.split(",")[0] || socket.handshake.address || socket.clientip;
+    return ip;
+}
 
 
 export default (socket, slog) => {
@@ -58,9 +63,11 @@ export default (socket, slog) => {
         isLocked: boolean
     }): void} ) => {
 
+        console.log(getClientIPFromSocket(socket));
+
         slog("API /sign/getlockedtime");
 
-        const timeLocked: number = await checkUserIsLocked(String(socket.clientip || ""));
+        const timeLocked: number = await checkUserIsLocked(getClientIPFromSocket(socket));
 
         call(false, {
             timeLocked: timeLocked || 0,
@@ -88,7 +95,7 @@ export default (socket, slog) => {
         
         checkCredentialForSignIn({
             ...data,
-            ipadress: String(socket.clientip || ""),
+            ipadress: getClientIPFromSocket(socket),
             userAgent: socket.handshake.headers["user-agent"]
         }, call);
     
@@ -190,7 +197,7 @@ export default (socket, slog) => {
 
         createNewUser({
             ...signUpData,
-            ipadress: String(socket.clientip || ""),
+            ipadress: getClientIPFromSocket(socket),
             userAgent: socket.handshake.headers["user-agent"]
         }, call)
 

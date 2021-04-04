@@ -21,6 +21,7 @@ Simple user management with the aim to learn common web security vulnerability.
 - sql-injection?
 - logging + monitoring
 - DoS?
+- id -> use uuidv4 
 - http headers
     - x-frame
     - cors

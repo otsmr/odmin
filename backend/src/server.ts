@@ -29,8 +29,12 @@ morgan.token('pseudo-remote-addr', function getId (req: any) {
     return req["pseudo-remote-addr"];
 })
 
-app.use((req, res, next) => {    
-    req["pseudo-remote-addr"] = (config.get("log:ip-addresses-pseudonymize")) ? pseudoIP(req.ip): req.ip;
+app.use((req, res, next) => {
+    let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    if (typeof ip === "object") {
+        ip = ip[0];
+    }
+    req["pseudo-remote-addr"] = (config.get("log:ip-addresses-pseudonymize")) ? pseudoIP(ip): ip;
     next()
 })
 
@@ -43,26 +47,17 @@ app.use(bodyParser.json());
 
 app.use("/api/v0", apiMiddleware);
 
-app.use("/:a/:b/:c/:d", express.static(__dirname + '/public'));
-app.use("/:a/:b/:c", express.static(__dirname + '/public'));
-app.use("/:a/:b", express.static(__dirname + '/public'));
-app.use("/:a", express.static(__dirname + '/public'));
-app.use(express.static(__dirname + '/public'));
+app.get("/index.html", (req, res, next) => {
+	res.redirect("/");
+})
+
+app.use(express.static(__dirname + '/public', {
+    index: false
+}));
 
 app.use((req, res) => {
-
     const indexHtml = readFileSync(join(__dirname, '/public/index.html')).toString();
-
     return res.send(indexHtml);
-
-    // res.setHeader('Content-Type', 'application/json');
-    // res.status(403);
-
-    // return res.send(JSON.stringify({
-    //     error: true,
-    //     message: "403 Forbidden"
-    // }))
-
 })
 
 io.on('connection', (socket) => {
