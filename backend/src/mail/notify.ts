@@ -11,8 +11,8 @@ export default class EMailNotification {
     userid: number;
     opt: {
         email: string,
-        securitystandard: string,
-        securityextended: string,
+        securitystandard: boolean,
+        securityextended: boolean,
         newsletter: string
     } = null;
 
@@ -27,9 +27,11 @@ export default class EMailNotification {
 
         if (!notify) return this.opt = null;
 
+        // TODO: chanel; securitystandard !== securityextended
+
         this.opt = {
-            securitystandard: notify.securitystandard,
-            securityextended: notify.securityextended,
+            securitystandard: notify.securityNotifications === 1,
+            securityextended: notify.securityNotifications === 2,
             newsletter: notify.newsletter,
             email: notify.email
         }

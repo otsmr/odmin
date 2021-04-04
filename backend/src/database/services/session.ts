@@ -8,6 +8,7 @@ import log from "../../utils/logs"
 import config from "../../utils/config"
 
 import fetch from "node-fetch"
+import EMailNotification from "../../mail/notify";
 
 export interface JWT_SESSION_TOKEN {
     session_token: string
@@ -93,6 +94,8 @@ export const createNewSession = async (user: any, ipadress?: string, userAgent?:
             session_token: sessions.token,
             service_id: "odmin"
         }
+
+        new EMailNotification(user.id).send("newSignin");
 
         return {
             jwt: jwt.sign(jwtData, config.get("jsonwebtoken:secret"), { 

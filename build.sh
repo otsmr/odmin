@@ -30,6 +30,8 @@ mkdir $__dirname/build/mail/templates
 cp $__dirname/backend/src/mail/templates/* $__dirname/build/mail/templates
 
 rm $__dirname/build/**/*.js.map
+rm $__dirname/build/**/**/*.js.map
+rm $__dirname/build/**/**/**/*.js.map
 rm $__dirname/build/*.js.map
 
 cd $__dirname/frontend
