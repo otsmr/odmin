@@ -21,6 +21,7 @@ Simple user management with the aim to learn common web security vulnerability.
 - sql-injection?
 - logging + monitoring
 - DoS?
+- check dependencies: https://medium.com/hackernoon/im-harvesting-credit-card-numbers-and-passwords-from-your-site-here-s-how-9a8cb347c5b5
 - id -> use uuidv4 
 - http headers
     - x-frame

@@ -1,4 +1,3 @@
-import * as ipaddr from 'ipaddr.js'
 
 export const chunkArray = (array: string, size: number) => {
 
@@ -49,12 +48,14 @@ export function pseudoIP (ip: string): string {
 
     if (ip.indexOf(":") > -1) { // IPv6
 
-        let addrArray  = ipaddr.parse(ip).toByteArray();
+        //! FIXME: pseudo ipv6
 
-        for (let i = 7; i < 16; i++) 
-            addrArray[i] = 0;
+        // let addrArray  = ipaddr.parse(ip).toByteArray();
 
-        ip = ipaddr.fromByteArray(addrArray).toString();
+        // for (let i = 7; i < 16; i++) 
+        //     addrArray[i] = 0;
+
+        // ip = ipaddr.fromByteArray(addrArray).toString();
 
     } else { // IPv4
 
