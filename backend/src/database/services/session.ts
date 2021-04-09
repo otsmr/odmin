@@ -7,7 +7,7 @@ import * as jwt from 'jsonwebtoken';
 import log from "../../utils/logs"
 import config from "../../utils/config"
 
-import EMailNotification from "../../mail/notify";
+import { sendNotification } from "../../mail/notify";
 import { getLocationFromIP, getRealIpInDevMode } from "../../utils/ip-address";
 
 export interface JWT_SESSION_TOKEN {
@@ -66,7 +66,7 @@ export const createNewSession = async (user: any, ipadress?: string, userAgent?:
     
             }
 
-            new EMailNotification(user.id).send("newSignin");
+            sendNotification(user.id, "newSignin");
 
         })
 

@@ -149,7 +149,7 @@ export default (socket: any, slog: {(msg: string): void}) => {
             }
 
             sendMail({
-                type: "newEmailAddress",
+                type: "new-email-address",
                 subject: "E-Mail-Adresse bestätigen",
                 to: data.email,
                 from: config.get("email:account"),

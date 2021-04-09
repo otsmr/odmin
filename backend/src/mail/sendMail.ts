@@ -20,7 +20,10 @@ export default (data: {
 
     const templateFilePath = join(__dirname, "templates", `${data.type}.html`);
 
-    if (!fs.existsSync(templateFilePath)) return;
+    if (!fs.existsSync(templateFilePath)) {
+        log.error("notifications", `sendMail: template "${data.type}" not found`);
+        return;
+    }
 
     let html = fs.readFileSync(templateFilePath, "utf-8").toString();
 
@@ -50,9 +53,11 @@ export default (data: {
             if (data.success) data.success(error, info);
             
             if (!error)
-                log.info("email", `E-Mail versendet an ${data.to} [MessageID:${info.messageId}] [ServerResponse:${info.response}]`)
+                if (config.get("runmode") === "development") {
+                    log.info("notifications", `E-Mail versendet an ${data.to} [MessageID:${info.messageId}] [ServerResponse:${info.response}]`)
+                }
             else {
-                log.error("email", `E-Mail [${data.subject}] konnte nicht an ${data.to} versendet werden. ${error.toString()}`);
+                log.error("notifications", `E-Mail [${data.subject}] konnte nicht an ${data.to} versendet werden. ${error.toString()}`);
             }
     
         })

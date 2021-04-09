@@ -3,68 +3,65 @@ import sendMail from "./sendMail";
 import { getNotificationsByUserID } from "../database/services/notifications";
 
 import config from "../utils/config"
+import logs from "../utils/logs";
 
-const secwarnTemplates = require("./templates/secwarn.json")
+import securityTemplates from "./templates/security"
 
-export default class EMailNotification {
+export function sendNotification (userid, type) {
 
-    userid: number;
-    opt: {
-        email: string,
-        securitystandard: boolean,
-        securityextended: boolean,
-        newsletter: string
-    } = null;
+    return new Promise(async (re, rj) => {
 
-    constructor (userid: number) {
-        this.userid = userid;
-    }
+        const userOptions = await getNotificationsByUserID(userid);
 
-    async loadData (userid: number) {
+        if (!userOptions)
+            return rj({ error: true });
 
-        //TODO: Benachrichtigungen: Matrix, E-Mail
-        const notify = await getNotificationsByUserID(userid);
-
-        if (!notify) return this.opt = null;
-
-        // TODO: chanel; securitystandard !== securityextended
-
-        this.opt = {
-            securitystandard: notify.securityNotifications === 1,
-            securityextended: notify.securityNotifications === 2,
-            newsletter: notify.newsletter,
-            email: notify.email
+        if (!securityTemplates[type]) {
+            logs.error("notifications", `sendNotification: template "${type}" not found`);
+            return;
         }
 
-    }
+        let isSendMail = false;
 
-    async send (type: string) {
+        switch (userOptions.securityNotifications) {
+            case 0: // disabled
+                break;
 
-        if (!this.opt) await this.loadData(this.userid);
+            case 1: // suspicious behavior
+
+
+                break;
+            case 2: //always
+                isSendMail = true;
         
-        if (!this.opt || !secwarnTemplates[type]) return;
+            default:
+                break;
+        }
 
-        const mail = secwarnTemplates[type];
+        console.log("isSendMail", isSendMail);
 
-        if ( this.opt.securityextended && mail.type === "extended" ) this.sendMail(mail);
-        if ( this.opt.securitystandard && mail.type === "standard" ) this.sendMail(mail);
+        if (!isSendMail) {
+            return;
+        }
 
-    }
-
-    sendMail (template) {
+        const template = securityTemplates[type];
 
         sendMail({
             type: template.template,
             subject: template.subject,
-            to: this.opt.email,
+            to: userOptions.email,
             from: config.get("email:account"),
             replace: {
-                email: this.opt.email,
+                email: userOptions.email,
                 title: template.title,
                 desc: template.text
+            },
+            success: () => {
+                re({error: false});
             }
         });
 
-    }
+
+    });
 
 }

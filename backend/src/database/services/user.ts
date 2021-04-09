@@ -12,7 +12,7 @@ import { getAllKeysByUserid } from "./webauthn"
 import { getTokens, createNewToken } from "./token"
 import { checkUserName } from '../../routes/shared';
 import { checkPasswordDialog } from '../../utils/dialog';
-import EMailNotification from '../../mail/notify';
+import { sendNotification } from '../../mail/notify';
 import { checkContinueLocation, getServiceByServiceId } from './service';
 
 
@@ -379,7 +379,7 @@ export const changeUsersPassword = async (userid: number, data: {
                     salt
                 });
 
-                new EMailNotification(userid).send("changePassword");
+                sendNotification(userid, "changePassword");
         
                 call(false, {
                     updateSucces: true
@@ -426,7 +426,8 @@ export const updateUserAccount = async (userid: number, data: {
 } | string ): void}) => {
 
     function success () {
-        new EMailNotification(userid).send("updateAccount");
+        
+        sendNotification(userid, "updateAccount");
 
         call(false, {
             updateSucces: true
