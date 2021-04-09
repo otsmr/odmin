@@ -4,11 +4,13 @@ logs/
 mysql-database/
 *.zip
 
+/docker-data
+
 # Backend
 backend/logs/
 backend/database/
-backend/src/config.json
-backend/src/config.changed.json
+config.json
+config.changed.json
 
 
 # Frontend

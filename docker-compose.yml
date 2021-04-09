@@ -1,0 +1,50 @@
+version: '3.3'
+services:
+  db:
+    image: mysql:latest
+    container_name: odmin_mysql
+    volumes:
+      - ./docker-data/mysql/:/var/lib/mysql
+    ports:
+      - 10001:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: odmin
+      MYSQL_USER: odmin
+      MYSQL_PASSWORD: odmin
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: odmin_phpmyadmin
+    ports:
+      - 10002:80
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./docker-data/phpmyadmin/:/sessions
+    depends_on:
+      - db
+
+  odmin_backend:
+    build: ./backend
+    image: odmin_backend
+    container_name: odmin_backend
+    ports:
+        - 10003:3030
+    volumes:
+      - ./docker-data/odmin/:/odmin/backend/build/data:ro
+      - ./backend/:/odmin/backend
+    depends_on:
+        - db
+
+  odmin_frontend:
+    build: ./frontend
+    image: odmin_frontend
+    container_name: odmin_frontend
+    ports:
+        - 10004:3000
+    # volumes:
+    #   - ./docker-data/odmin_frontend/:/odmin/web
+
+# volumes:
+#     db_data: {}

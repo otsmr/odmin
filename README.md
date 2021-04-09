@@ -32,36 +32,11 @@ Simple user management with the aim to learn common web security vulnerability.
 
 # getting started
 
-Required are docker, nodejs and npm.
+Required are docker and docker-compose.
 
-**Backend**
-```
-cd backend
-docker-compose up -d
-cp config.sample.json config.json
-```
-
-*update config.json*
-```
-mysql.port <- docker inspect backend_db_1 | grep IPAddress
-mysql.port = 3308
-mysql.pass = odmin
-mysql.database = odmin
-mysql.user = odmin
+```bash
+docker-compose up
 ```
 
 *E-Mail debugging**
 Test-Server: https://github.com/nodemailer/nodemailer-app
-
-*start backend server*
-```
-npm i
-npm run dev
-```
-
-**Backend**
-```
-cd frontend
-npm i
-npm start
-```
