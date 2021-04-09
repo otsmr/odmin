@@ -7,8 +7,8 @@ import * as jwt from 'jsonwebtoken';
 import log from "../../utils/logs"
 import config from "../../utils/config"
 
-import fetch from "node-fetch"
 import EMailNotification from "../../mail/notify";
+import { getLocationFromIP, getRealIpInDevMode } from "../../utils/ip-address";
 
 export interface JWT_SESSION_TOKEN {
     session_token: string
@@ -30,62 +30,11 @@ export const createNewSession = async (user: any, ipadress?: string, userAgent?:
             expiresIn: date.setTime( date.getTime() + 1 * 86400000 )
         }
 
+        const session = await Session.create(sessions);
 
-        if (user.saveLog) {
-
-            sessions.clientip = ipadress || "";
-            sessions.userAgent = userAgent || "";
-
-            const localDomains = [
-                "::1",
-                "localhost",
-                "127.0.0.1",
-                ""
-            ]
-
-            // use real ip in dev
-            if (
-                config.get("runmode") === "development" && 
-                (localDomains.indexOf(ipadress) > -1 || ipadress.startsWith("127.0.0."))    
-            ) {
-                try {
-                    
-                    const resMyIP = await fetch(config.get("ipinfoservice") + "/api/myip");
-                    const jsonMyIP = await resMyIP.json();
-                    ipadress = jsonMyIP.ip || "";
-                    sessions.clientip = ipadress;
-
-                } catch (error) {
-                    console.error(error);
-                }
-
-            }
-            
-            try {
-                
-                const response = await fetch(config.get("ipinfoservice") + "/api/ip", {
-                    method: 'POST',
-                    headers: {
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        ip: ipadress
-                    })
-                });
-                const responseJSON = await response.json();
-
-                sessions.city = responseJSON.city;
-                sessions.plz = responseJSON.zipcode;
-                sessions.country = responseJSON.country_long + ` (${responseJSON.region})`;
-
-            } catch (error) {
-                log.error("iplookup", `ERROR: ${error}`);
-            }
-
+        if (!session) {
+            return null;
         }
-
-        await Session.create(sessions);
 
         const jwtData: JWT_SESSION_TOKEN = {
             user_id: user.id,
@@ -95,7 +44,31 @@ export const createNewSession = async (user: any, ipadress?: string, userAgent?:
             service_id: "odmin"
         }
 
-        new EMailNotification(user.id).send("newSignin");
+        new Promise(async () => {
+
+            if (user.saveLog) {
+
+                ipadress = await getRealIpInDevMode(ipadress);
+                
+                sessions.clientip = ipadress || "";
+                sessions.userAgent = userAgent || "";
+    
+                sessions = {
+                    ...sessions,
+                    ...await getLocationFromIP(ipadress)
+                }
+                
+                await Session.update(sessions, {
+                    where: {
+                        id: session.dataValues.id
+                    }
+                });
+    
+            }
+
+            new EMailNotification(user.id).send("newSignin");
+
+        })
 
         return {
             jwt: jwt.sign(jwtData, config.get("jsonwebtoken:secret"), { 
