@@ -43,8 +43,8 @@ services:
     container_name: odmin_frontend
     ports:
         - 10004:3000
-    # volumes:
-    #   - ./docker-data/odmin_frontend/:/odmin/web
+    volumes:
+      - ./frontend/:/odmin/frontend
 
 # volumes:
 #     db_data: {}

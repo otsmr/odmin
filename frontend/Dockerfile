@@ -3,14 +3,17 @@ FROM node:14.16.0
 RUN  apt-get update \
      && apt-get update
 
-COPY ./ /odmin/web
-WORKDIR /odmin/web
+WORKDIR /odmin/frontend
 
-RUN cd /odmin/web && npm install && \
-    ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+RUN ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 
-# RUN groupadd -r odmin && useradd -r -g odmin odmin
-# USER odmin
+COPY "./entrypoint.sh" "/odmin/"
+
+RUN ["/bin/chown", "node:node", "/odmin/entrypoint.sh"]
+RUN ["/bin/chmod", "+x", "/odmin/entrypoint.sh"]
 
 EXPOSE 3000
-ENTRYPOINT ["npm", "start"]
+
+USER node
+
+ENTRYPOINT ["/odmin/entrypoint.sh"]
