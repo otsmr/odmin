@@ -5,7 +5,7 @@ import "./../assets/style/elements/form.scss"
 import "./../assets/style/pages/sign.scss"
 
 import socket from '../utils/socket';
-import { setCookie, blurAll, cleanUsername, getSearchLocation } from '../utils/utils';
+import { setCookie, blurAll, cleanUsername, getSearchLocation, setHttpOnlyCookie } from '../utils/utils';
 
 import { checkService, IService, useLockedSign } from "./../components/LockedSign"
 import { Input, IInputProblem } from "../components/input"
@@ -48,19 +48,17 @@ export default function () {
         setIsLoading(true);
         blurAll();
 
-        socket.emit("/sign/privacyaccepted", (err: boolean, data: { cookieToken: string, continue: string }) => {
+        socket.emit("/sign/privacyaccepted", (err: boolean, data: { setCookieToken: string, continue: string }) => {
             
             setIsLoading(false);
         
             if (err) return console.error("/sign/privacyaccepted", err, data);
 
-            setCookie("token", data.cookieToken || "");
-
             setIsSignSucces(true);
 
-            setTimeout(() => {
+            setHttpOnlyCookie({setCookieToken: data.setCookieToken}, () => {
                 (window as any).location.href = data.continue;
-            }, 1000);
+            });
 
         })
 

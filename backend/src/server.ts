@@ -91,6 +91,8 @@ export class SocketUser {
 
         return new Promise((re, rj) => {
 
+            // TODO: checktoken and save data
+
             re();
 
             rj();
@@ -145,19 +147,11 @@ io.on('connection', async (socket: SocketWithData) => {
 
     slog(`Neue Verbindung mit "${socket.handshake.headers.host}"`);
 
-    const int = setInterval(() => {
-        if (socket.user) {
-            socket.user.checkToken()
-            .then(() => {
-                if (!socket.user.isLoggedIn)
-                    signOutAlert(socket);
-            })
-            .catch(console.error);
-        }
-    }, 5000);
+    let intervall = null;
 
     socket.on("disconnect", () => {
-        clearInterval(int);
+        if (intervall)
+            clearInterval(intervall);
         slog("Verbindung getrennt");
     });
 
@@ -166,6 +160,17 @@ io.on('connection', async (socket: SocketWithData) => {
     socket.user = new SocketUser(cookies.token || "");
 
     if (socket.user.isLoggedIn) {
+
+        intervall = setInterval(() => {
+            if (socket.user && socket.user.isLoggedIn) {
+                socket.user.checkToken()
+                .then(() => {
+                    if (!socket.user.isLoggedIn)
+                        signOutAlert(socket);
+                })
+                .catch(console.error);
+            }
+        }, 5000);
 
         useProfileSocket(socket, slog);
         useSettingsSocket(socket, slog);

@@ -1,6 +1,23 @@
 
 import moment from "moment";
 
+export function setHttpOnlyCookie (cookies: object, callBack: {(): void}) {
+
+    fetch((window as any).API_BASE + "/api/v0/set-cookie", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(cookies)
+    })
+    .then(e => e.json())
+    .then(e => {
+        callBack();
+    })
+
+}
+
 export function createBeautifulCountdown (sollZeit: number, istZeit: number) {
     if (sollZeit - istZeit <= 0) return "00:00:00";
     const duration = moment.duration(sollZeit - istZeit);

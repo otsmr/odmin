@@ -116,7 +116,7 @@ async function handleCreateNewSession (req: {
     setCookieToken: string
 } | null>  {
 
-    const sessionToken = await createNewSession(req.user.user, req.ipAddress, req.userAgent);
+    const sessionToken = await createNewSession(req.user, req.ipAddress, req.userAgent);
     if (!sessionToken)
         return null;
 
@@ -227,7 +227,7 @@ export const checkCredentialForSignIn = async (data: {
         ipAddress: data.ipadress,
         serviceID: data.serviceid,
         userAgent: data.userAgent,
-        user: userInDB
+        user: userInDB.user
     });
     
     call(false, {

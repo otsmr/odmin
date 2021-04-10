@@ -5,7 +5,7 @@ import "./../assets/style/elements/form.scss"
 import "./../assets/style/pages/sign.scss"
 
 import socket from '../utils/socket';
-import { setCookie, blurAll, getSearchLocation } from '../utils/utils';
+import { setCookie, blurAll, getSearchLocation, setHttpOnlyCookie } from '../utils/utils';
 
 import { useLockedSign, IService, checkService } from "../components/LockedSign"
 
@@ -107,18 +107,9 @@ export default function () {
 
                 setIsSignSucces(true);
 
-                fetch((window as any).API_BASE + "/api/v0/set-cookie", {
-                    method: "POST",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({setCookieToken: data.setCookieToken})
-                })
-                .then(e => e.json())
-                .then(e => {
+                setHttpOnlyCookie({setCookieToken: data.setCookieToken}, () => {
                     (window as any).location.href = data.continue;
-                })
+                });
 
                 return;
             }
