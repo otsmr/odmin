@@ -1,16 +1,12 @@
 import { getNotificationsByUserID } from "../database/services/notifications";
-import { getSessionByToken, getSessionsFromUser, deleteSessionById } from "../database/services/session";
+import { getSessionsFromUser, deleteSessionById } from "../database/services/session";
 
 import { UAParser } from "ua-parser-js";
-import * as cookie from "cookie"
 import * as moment from "moment"
 moment.locale("de")
 
-import { checkIsTokanValid, getUserByID } from "../database/services/user";
-import { getAllKeysByUserid } from "../database/services/webauthn";
-import { getUserByCookie } from "./shared";
-
 import { confirm } from "../utils/dialog"
+import { SocketWithData } from "../server";
 
 export interface ISession {
     id: number,
@@ -26,31 +22,24 @@ export interface ISession {
 }
 
 
-export default (socket, slog) => {
+export default (socket: SocketWithData, slog) => {
 
     socket.on("/personalinfo/summary", async (call: {(err: boolean, data?: { email: string, lastSession: { clientip: string, os: string, browser: string } } | string): void } ) => {
 
+        if (!socket.user.isLoggedIn) 
+            return call(true, "");
+        
         slog("API /personalinfo/summary");
-        const user = await getUserByCookie(socket);
-        if (!user) return call(false);
-        
-        const cookies = cookie.parse(socket.handshake.headers.cookie || "");
-        let sessionData = await checkIsTokanValid(cookies.token);
-        if (!sessionData) {
-            return call(false);
-        }
-        const session = sessionData.sessionDB;
 
-        // FIXME: ? userJWT not defined ?
-        
-        const notify = await getNotificationsByUserID(user.userid);
+        const session = await socket.user.getDBSession();
+        const notify = await getNotificationsByUserID(socket.user.id);
                 
         const options = {
             email: notify?.email || "",
             lastSession: {
-                clientip: "",
-                browser: "",
-                os: "",
+                clientip: "-",
+                browser: "-",
+                os: "-",
                 plz: "",
                 city: "",
                 country: "",
@@ -62,13 +51,9 @@ export default (socket, slog) => {
         if (session && session.type) {
 
             options.lastSession = {
+                ...options.lastSession,
+                ...session,
                 clientip: (session.clientip || "-"),
-                browser: "-",
-                os: "-",
-                valid: session.valid,
-                plz: session.plz,
-                country: session.country,
-                city: session.city,
                 createdAtMoment: moment(new Date(session.createdAt).getTime()).format("DD.MM.YYYY HH:mm")
             }
 
@@ -89,47 +74,43 @@ export default (socket, slog) => {
     interface ISecurityData {
         isTwoFAEnabled: boolean;
         isExtendedLogEnabled: boolean;
-        webAuthnKey: number;
         sessions: ISession[];
     }
 
     socket.on("/security/summary", async (call: {(err: boolean, data: ISecurityData | string): void}) => {
 
+        if (!socket.user.isLoggedIn) 
+            return call(true, "");
+
         slog("API /security/summary");
-        const user = await getUserByCookie(socket);
-        if (!user) return call(true, "nicht angemeldet");
 
-        const sessionsInDb = await getSessionsFromUser(user.userid);
-        let webauthn = await getAllKeysByUserid(user.userid);
-
-        let webAuthnKey = 0;
-        if (webauthn) webAuthnKey = webauthn.length;
+        const sessionsInDb = await getSessionsFromUser(socket.user.id);
 
         sessionsInDb.reverse();
 
         const sessions: ISecurityData["sessions"] = []
 
-        for (const sessionInDb of sessionsInDb) {
+        for (const sessionDB of sessionsInDb) {
 
-            let expiresInMoment = moment(new Date(sessionInDb.expiresIn).getTime()).fromNow(true);
+            let expiresInMoment = moment(new Date(sessionDB.expiresIn).getTime()).fromNow(true);
 
-            if (new Date(sessionInDb.expiresIn).getTime() < new Date().getTime()) 
+            if (new Date(sessionDB.expiresIn).getTime() < new Date().getTime()) 
                 expiresInMoment = "Abgelaufen";
 
             let session = {
-                id: sessionInDb.id,
-                clientip: (sessionInDb.clientip || "-"),
+                id: sessionDB.id,
+                clientip: (sessionDB.clientip || "-"),
                 browser: "-",
                 os: "-",
-                valid: sessionInDb.valid,
-                plz: sessionInDb.plz,
-                city: sessionInDb.city,
-                country: sessionInDb.country,
+                valid: sessionDB.valid,
+                plz: sessionDB.plz,
+                city: sessionDB.city,
+                country: sessionDB.country,
                 expiresInMoment: expiresInMoment,
-                createdAtMoment: moment(new Date(sessionInDb.createdAt).getTime()).fromNow(true)
+                createdAtMoment: moment(new Date(sessionDB.createdAt).getTime()).format("DD.MM.YYYY HH:mm")
             }
 
-            const ua = new UAParser(sessionInDb.userAgent);
+            const ua = new UAParser(sessionDB.userAgent);
 
             if (ua.getBrowser().name) {
                 session.browser = ua.getBrowser().name + " " + ua.getBrowser().version;
@@ -141,9 +122,8 @@ export default (socket, slog) => {
         }
 
         call(false, {
-            webAuthnKey,
-            isTwoFAEnabled: (socket.user.twofa) ? true : false,
-            isExtendedLogEnabled: (socket.user.saveLog as boolean),
+            isTwoFAEnabled: (socket.user.twofa !== "") ? true : false,
+            isExtendedLogEnabled: socket.user.saveLog,
             sessions
         });
 
@@ -152,15 +132,18 @@ export default (socket, slog) => {
     .on("/security/sessions/delete", async (sessionid: number, call: {(err: boolean): void}) => {
 
         slog("API /security/sessions/delete");
-        const user = await getUserByCookie(socket);
-        if (!user) return call(true);
+        
+        if (!socket.user.isLoggedIn) 
+            return call(true);
 
-        if (socket.currentSession.id === sessionid) {
+        const session = await socket.user.getDBSession();
+
+        if (session.id === sessionid) {
             confirm(socket, {
                 title: "Aktuelle Session löschen?",
                 text: "Die aktuelle Session wird gelöscht und Sie müssen sich erneut anmelden.",
                 onSuccess: async () => {
-                    await deleteSessionById(sessionid);
+                    await session.destroy();
                     call(false);
                 }
             })
@@ -169,8 +152,6 @@ export default (socket, slog) => {
             call(false);
         }
 
-
     })
-
 
 }

@@ -1,8 +1,8 @@
 import { getUserByUsername, createNewUser, checkCredentialForSignIn, checkUserIsLocked } from "../database/services/user";
 import { getToken } from "../database/services/token";
 import { getServiceByServiceId } from "../database/services/service";
-import { getUserByCookie } from "./shared";
 import config from "../utils/config";
+import { SocketWithData } from "../server";
 
 function getClientIPFromSocket (socket) {
     let ip = socket.handshake.headers['x-forwarded-for']?.split(",")[0] || socket.handshake.address || socket.clientip;
@@ -10,18 +10,18 @@ function getClientIPFromSocket (socket) {
 }
 
 
-export default (socket, slog) => {
+export default (socket: SocketWithData, slog) => {
 
     let signUpData: {
         username: string,
         password: string,
-        token: any,
+        tokenDB: any,
         checkContinue: string,
         serviceid: string
     } = {
         username: "",
         password: "",
-        token: null,
+        tokenDB: null,
         checkContinue: "/",
         serviceid: ""
     };
@@ -37,7 +37,8 @@ export default (socket, slog) => {
 
         const service = await getServiceByServiceId(serviceid);
 
-        if (!service) return call(false, null);
+        if (!service)
+            return call(false, null);
 
         return call(false, {
             name: service.name,
@@ -50,10 +51,14 @@ export default (socket, slog) => {
 
         // slog("API /sign/isloggedin");
 
-        const user = await getUserByCookie(socket);
+        await socket.user.checkToken();
     
-        if (user) 
-            return call(false, true, user);
+        if (socket.user.isLoggedIn) 
+            return call(false, true, {
+                username: socket.user.name,
+                role: socket.user.role,
+                userid: socket.user.id
+            });
 
         return call(false, false);
 
@@ -63,8 +68,6 @@ export default (socket, slog) => {
         timeLocked: number,
         isLocked: boolean
     }): void} ) => {
-
-        console.log(getClientIPFromSocket(socket));
 
         slog("API /sign/getlockedtime");
 
@@ -135,10 +138,11 @@ export default (socket, slog) => {
             }
         });
 
-        const userInDB = await getUserByUsername(data.username);
-        if (userInDB.err) return call(true);
+        const userDB = await getUserByUsername(data.username);
+        if (userDB.err)
+            return call(true);
 
-        if (userInDB.user !== null) return call(false, {
+        if (userDB.user !== null) return call(false, {
             createSucces: false,
             problemWithInput: {
                 inputid: "username",
@@ -165,11 +169,16 @@ export default (socket, slog) => {
             }
         });
 
-        const tokenInDB = await getToken("inviteToken", data.inviteToken);
-        const tokenDevAllow = config.get("runmode") === "development" &&  data.inviteToken === config.get("dev:invitetoken");
-        if (tokenInDB.err) return call(true);
+        const tokenDB = await getToken("inviteToken", data.inviteToken);
+        if (tokenDB.err)
+            return call(true);
 
-        if (tokenInDB.token === null && !tokenDevAllow) return call(false, {
+        const tokenDevAllow =
+            config.get("runmode") === "development" &&
+            data.inviteToken === config.get("dev:invitetoken");
+        
+
+        if (tokenDB.token === null && !tokenDevAllow) return call(false, {
             createSucces: false,
             problemWithInput: {
                 inputid: "inviteToken",
@@ -181,7 +190,7 @@ export default (socket, slog) => {
         signUpData.username = data.username;
         signUpData.password = data.password;
         signUpData.checkContinue = data.checkContinue;
-        signUpData.token = tokenInDB.token;
+        signUpData.tokenDB = tokenDB.token;
         signUpData.serviceid = data.serviceid;
 
         call(false, {
@@ -205,5 +214,4 @@ export default (socket, slog) => {
 
     })
     
-
 }

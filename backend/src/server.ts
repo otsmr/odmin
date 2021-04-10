@@ -1,7 +1,11 @@
 import { createServer } from 'http'
+import { readFileSync, existsSync } from 'fs'
+import { join } from 'path'
+
 import morgan = require("morgan")
 import * as express from "express"
-const socket = require("socket.io");
+import * as cookie from "cookie"
+import socket = require("socket.io");
 import * as cookieParser from 'cookie-parser'
 import * as bodyParser from 'body-parser'
 
@@ -13,13 +17,14 @@ import { pseudoIP } from './utils/utils'
 globalThis.isDev = (config.get("runmode") === "development") ? true : false;
 
 import database from "./database/initdb"
+
 import apiMiddleware from "./routes/api"
 import useSignSocket from "./routes/sign"
 import useProfileSocket from "./routes/profile"
 import useSettingsSocket from "./routes/settings/index"
 import useAdminSocket from "./routes/admin/index"
-import { readFileSync, existsSync } from 'fs'
-import { join } from 'path'
+import { signOutAlert } from './routes/shared';
+import { getSessionByToken } from './database/services/session';
 
 const app = express();
 const port = config.get("server:port") || 8080;
@@ -67,7 +72,71 @@ app.use((req, res) => {
     return res.send(indexHtml);
 })
 
-io.on('connection', (socket) => {
+export class SocketUser {
+
+    _sessionToken: string | null;
+    _userID: number;
+    _userRole: string;
+    _userName: string;
+    _valid: boolean;
+    _saveLog: boolean;
+    _twofa: string;
+
+    constructor (sessionToken: string | null) {
+        this._sessionToken = sessionToken;
+        this.checkToken();
+    }
+
+    checkToken () {
+
+        return new Promise((re, rj) => {
+
+            re();
+
+            rj();
+
+        });
+
+    }
+
+    getDBSession (): Promise<any | null> {
+
+        return new Promise(async (re, rj) => {
+            re(await getSessionByToken(this._sessionToken));
+        });
+
+    } 
+
+    get isLoggedIn () {
+        return this._valid;
+    }
+
+    get twofa () {
+        return this._twofa;
+    }
+    get saveLog () {
+        return this._saveLog;
+    }
+
+    get name () {
+        return this._userName;
+    }
+
+    get role () {
+        return this._userRole;
+    }
+
+    get id () {
+        return this._userID;
+    }
+
+}
+
+export interface SocketWithData extends socket.Socket {
+    user: SocketUser
+}
+
+io.on('connection', async (socket: SocketWithData) => {
 
     function slog (msg: string) {
         if (config.get("runmode") === "development")
@@ -76,14 +145,40 @@ io.on('connection', (socket) => {
 
     slog(`Neue Verbindung mit "${socket.handshake.headers.host}"`);
 
+    const int = setInterval(() => {
+        if (socket.user) {
+            socket.user.checkToken()
+            .then(() => {
+                if (!socket.user.isLoggedIn)
+                    signOutAlert(socket);
+            })
+            .catch(console.error);
+        }
+    }, 5000);
+
     socket.on("disconnect", () => {
+        clearInterval(int);
         slog("Verbindung getrennt");
     });
 
-    useSignSocket(socket, slog);
-    useProfileSocket(socket, slog);
-    useSettingsSocket(socket, slog);
-    useAdminSocket(socket, slog);
+    const cookies = cookie.parse(socket.handshake.headers.cookie || "");
+
+    socket.user = new SocketUser(cookies.token || "");
+
+    if (socket.user.isLoggedIn) {
+
+        useProfileSocket(socket, slog);
+        useSettingsSocket(socket, slog);
+
+        if (socket.user.role === "admin") {
+            useAdminSocket(socket, slog);
+        }
+
+    } else {
+
+        useSignSocket(socket, slog);
+
+    }
 
 });
 

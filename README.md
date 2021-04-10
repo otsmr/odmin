@@ -10,9 +10,8 @@ Simple user management with the aim to learn common web security vulnerability.
 ## Goals
 
 - Cross-domain capable
-- WebAuthn support
+- (WebAuthn support)
 - e-mail notifications
-- JWT
 - ...
 
 ## check for web security vulnerabilities

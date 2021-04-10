@@ -1,6 +1,6 @@
-import { getUserByUsername, checkIsTokanValid } from "../database/services/user";
-import * as cookie from "cookie"
+import { getUserByUsername } from "../database/services/user";
 import { alert } from "../utils/dialog"
+import { SocketWithData } from "../server";
 
 export function checkPassword (password: string, passwordWdh: string) {
 
@@ -69,9 +69,7 @@ export async function checkUserName (username: string) {
 
 }
 
-const signOutAlert = (socket: any): null => {
-    if (socket.user === null) return null;
-    socket.user = null;
+export function signOutAlert (socket: SocketWithData): null  {
 
     alert(socket, {
         title: "Abgemeldet",
@@ -83,28 +81,4 @@ const signOutAlert = (socket: any): null => {
     });
     
     return null;
-}
-
-export async function getUserByCookie (socket: any): Promise<{ userid: number, username: string, role: string } | null> {
-
-    const cookies = cookie.parse(socket.handshake.headers.cookie || "");
-
-    if (cookies.token) {
-
-        const user = await checkIsTokanValid(cookies.token);
-
-        if (!user) return signOutAlert(socket);
-
-        socket.user = user.userdb;
-        socket.currentSession = user.session;
-
-        return {
-            userid: user.id,
-            username: user.username,
-            role: user.role
-        }
-
-    }
-    return signOutAlert(socket);
-
 }

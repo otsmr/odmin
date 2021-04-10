@@ -1,11 +1,12 @@
-import { getUserByCookie, checkPassword } from "./../shared";
+import { checkPassword } from "./../shared";
 import { updateUserAccount, changeUsersPassword, destroyUserAccount } from "../../database/services/user";
 import { checkPasswordDialog } from "../../utils/dialog"
+import { SocketWithData } from "../../server";
 
 interface IInputProblem { inputid: string, msg: string, inputValue: string }
 
 
-export default (socket: any, slog: {(msg: string): void}) => {
+export default (socket: SocketWithData, slog: {(msg: string): void}) => {
 
     socket
 
@@ -17,9 +18,7 @@ export default (socket: any, slog: {(msg: string): void}) => {
 
         slog("API /settings/account/changeusername");
 
-        const user = await getUserByCookie(socket);
-
-        if (!user) return call(false, {
+        if (!socket.user.isLoggedIn) return call(false, {
             updateSucces: false,
             message: "Nicht Angemeldet"
         });
@@ -30,7 +29,7 @@ export default (socket: any, slog: {(msg: string): void}) => {
                 updateSucces: false
             });
 
-            await updateUserAccount(user.userid, { username, socket }, call);
+            await updateUserAccount(socket.user.id, { username, socket }, call);
         })
 
     
@@ -44,9 +43,7 @@ export default (socket: any, slog: {(msg: string): void}) => {
 
         slog("API /settings/account/changepassword");
 
-        const user = await getUserByCookie(socket);
-
-        if (!user) return call(false, {
+        if (!socket.user.isLoggedIn) return call(false, {
             updateSucces: false,
             message: "Nicht Angemeldet"
         });
@@ -60,7 +57,7 @@ export default (socket: any, slog: {(msg: string): void}) => {
             }); 
         }
 
-        await changeUsersPassword(user.userid, { password, socket }, call);
+        await changeUsersPassword(socket.user.id, { password, socket }, call);
     
     })
 
@@ -71,24 +68,18 @@ export default (socket: any, slog: {(msg: string): void}) => {
 
         slog("API /settings/account/changeextendedlogstatus");
 
-        const user = await getUserByCookie(socket);
-
-        if (!user) return call(false, {
+        if (!socket.user.isLoggedIn) return call(false, {
             updateSucces: false,
             message: "Nicht Angemeldet"
         });
 
-        await updateUserAccount(user.userid, { saveLogStatus, socket }, call);
+        await updateUserAccount(socket.user.id, { saveLogStatus, socket }, call);
     
     }) 
 
     .on("/settings/account/getextendedlogstatus", async (call: {(err: boolean, extendedLogStatus: boolean):void}) => {
 
         slog("API /settings/account/getextendedlogstatus");
-
-        const user = await getUserByCookie(socket);
-
-        if (!user) return call(true, false);
 
         call(false, socket.user.saveLog);
 

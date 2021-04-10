@@ -128,7 +128,8 @@ export const getToken = async (name: string, token: string) => {
             token
         }});
 
-        if (tokens && tokens.length > 0) return { err: false, token: tokens[0] };
+        if (tokens && tokens.length > 0)
+            return { err: false, token: tokens[0] };
 
         return { err: false, token: null };
 

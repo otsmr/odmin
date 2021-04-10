@@ -4,7 +4,7 @@ import log from "../utils/logs"
 import { getServiceBySecret, getServiceByServiceId } from "../database/services/service";
 import { disableSessionByToken, getSessionByToken } from "../database/services/session";
 import { destroyExpiredTokens, destroyTokensByValue, getToken } from "../database/services/token";
-import { checkIsTokanValid, getBuildedContinueForService, getUserByID } from "../database/services/user";
+import { checkIsTokenValid, getBuildedContinueForService, getUserByID } from "../database/services/user";
 import config from "../utils/config";
 
 router.get("/cron", async (req: any, res: any, next: any) => {
@@ -139,7 +139,7 @@ router.get("/service/user/sigin", async (req: any, res: any, next: any) => {
         return next();
     
     if (req.cookies && req.cookies.token) {
-        const session = await checkIsTokanValid(req.cookies.token);
+        const session = await checkIsTokenValid(req.cookies.token);
 
         if (session) {
             let continueUrl = await getBuildedContinueForService(req.query.serviceid, session.session, req.query.continue);

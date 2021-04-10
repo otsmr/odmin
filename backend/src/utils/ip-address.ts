@@ -40,8 +40,7 @@ export async function getLocationFromIP (ipadress: string): Promise<{
     plz: string
     country: string
 }> {
-
-
+    
     const location = {
         city: "",
         plz: "",

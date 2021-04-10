@@ -1,14 +1,9 @@
-// -------------------------------------------
-//  API: Benachrichtigungen
-// -------------------------------------------
-
 import { getNotificationsByUserID, updateNotifications } from "../../database/services/notifications";
 import { checkPasswordDialog, alert, prompt } from "../../utils/dialog";
 
 import { validateEmail } from "../../utils/utils";
 import sendMail from "../../mail/sendMail";
 import config from "../../utils/config";
-import { strict } from "assert";
 
 interface IInputProblem { inputid: string, msg: string, inputValue: string }
 interface ApiData {
@@ -31,7 +26,8 @@ export default (socket: any, slog: {(msg: string): void}) => {
 
         const notify = await getNotificationsByUserID(socket.user.id);
 
-        if (!notify) return call(false, null);
+        if (!notify)
+            return call(false, null);
  
         call(false, {
             email: notify.email || "",
@@ -53,7 +49,6 @@ export default (socket: any, slog: {(msg: string): void}) => {
     }):void }) => {
 
         slog("API /settings/notifications/updatechanel");
-
 
         const notify = await getNotificationsByUserID(socket.user.id);
 
@@ -101,9 +96,6 @@ export default (socket: any, slog: {(msg: string): void}) => {
                 updateSuccess: true
             });
         }
-
-
-
 
     })
     

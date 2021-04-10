@@ -6,7 +6,6 @@ import { User } from '../initdb'
 import log from '../../utils/logs'
 
 import { createNewSession, getSessionByToken } from "./session";
-import { getAllKeysByUserid } from "./webauthn"
 import { getTokens, createNewToken } from "./token"
 import { checkUserName } from '../../routes/shared';
 import { checkPasswordDialog } from '../../utils/dialog';
@@ -43,6 +42,7 @@ export const checkUserIsLocked = async (ipadress: string): Promise<number> => {
     const now = new Date().getTime();
     let count = 0;
     let time = null;
+
     if (tokens) {
         tokens.reverse();
         for (const token of tokens) {
@@ -153,7 +153,6 @@ export const checkCredentialForSignIn = async (data: {
     isLocked?: boolean,
     setCookieToken?: string,
     continue?: string,
-    isWebAuthnUser?: boolean,
     isTwoFaUser?: boolean,
 }): void}) => {
 
@@ -175,17 +174,6 @@ export const checkCredentialForSignIn = async (data: {
 
     if (userInDB.user === null) return failed();
 
-    if (data.password.length === 0) {
-
-        let credentialIDs = await getAllKeysByUserid(userInDB.user.id);
-        if (credentialIDs.length === 0) return failed();
-
-        return call(false, {
-            credentialsAreOk: false,
-            isWebAuthnUser: true
-        });
-
-    }
     let password = "";
 
     try {
@@ -257,12 +245,14 @@ export const createNewUser = async (data: {
     serviceid: string,
     checkContinue: string,
     ipadress: string,
-    userAgent: string
+    userAgent: string,
+    tokenDB: any
 }, call: {(err: boolean, data?: { setCookieToken: string, continue: string }): void}) => {
 
     try {
 
-        // await data.token.destroy();
+        if (data.tokenDB)
+            await data.tokenDB.destroy();
 
         const salt = await crypto.randomBytes(64).toString("hex");
 
@@ -306,7 +296,7 @@ export const createNewUser = async (data: {
 }
 
 
-export const checkIsTokanValid = async (session: string)  => {
+export const checkIsTokenValid = async (session: string)  => {
 
     try {
 
@@ -331,7 +321,7 @@ export const checkIsTokanValid = async (session: string)  => {
         }
         
     } catch (e) {
-        log.error("database", `checkIsTokanValid: ${e.toString()}` );
+        log.error("database", `checkIsTokenValid: ${e.toString()}` );
     }
     
     return null;
