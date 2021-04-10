@@ -14,7 +14,7 @@ export function sendNotification (userid, type) {
         const userOptions = await getNotificationsByUserID(userid);
 
         if (!userOptions)
-            return rj({ error: true });
+            return rj({ error: true, message: "getNotificationsByUserID not found" });
 
         if (!securityTemplates[type]) {
             logs.error("notifications", `sendNotification: template "${type}" not found`);
@@ -62,6 +62,9 @@ export function sendNotification (userid, type) {
         });
 
 
+    }).catch(e => {
+        logs.error("notifications", "sendNotification: " + JSON.stringify(e));
+        console.log(e);
     });
 
 }

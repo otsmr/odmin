@@ -1,13 +1,11 @@
 
 import * as crypto from 'crypto';
-import * as jwt from 'jsonwebtoken';
 import * as Speakeasy from "speakeasy";
 
 import { User } from '../initdb'
 import log from '../../utils/logs'
-import config from '../../utils/config'
 
-import { createNewSession, getSessionByToken, JWT_SESSION_TOKEN } from "./session";
+import { createNewSession, getSessionByToken } from "./session";
 import { getAllKeysByUserid } from "./webauthn"
 import { getTokens, createNewToken } from "./token"
 import { checkUserName } from '../../routes/shared';
@@ -107,6 +105,41 @@ export async function getBuildedContinueForService (serviceid: string, sessionsT
 
 }
 
+async function handleCreateNewSession (req: {
+    user: any
+    ipAddress: string
+    userAgent: string
+    serviceID: string
+    checkContinue: string
+}): Promise<{
+    continueUrl: string
+    setCookieToken: string
+} | null>  {
+
+    const sessionToken = await createNewSession(req.user.user, req.ipAddress, req.userAgent);
+    if (!sessionToken)
+        return null;
+
+    let continueUrl: string = ""; 
+    if (req.serviceID) {
+        continueUrl = await getBuildedContinueForService(req.serviceID, sessionToken, req.checkContinue);
+    } else {
+        continueUrl = checkContinueLocation(req.checkContinue);
+    }
+
+    const setCookieToken = crypto.randomBytes(30).toString('hex');
+
+    if (!await createNewToken("odmin-set-cookie", setCookieToken, sessionToken)) {
+        return null;
+    };
+
+    return {
+        setCookieToken,
+        continueUrl
+    }
+
+}
+
 export const checkCredentialForSignIn = async (data: {
     username: string,
     password: string,
@@ -118,7 +151,7 @@ export const checkCredentialForSignIn = async (data: {
 }, call: {(err: boolean, data?: {
     credentialsAreOk: boolean,
     isLocked?: boolean,
-    cookieToken?: string,
+    setCookieToken?: string,
     continue?: string,
     isWebAuthnUser?: boolean,
     isTwoFaUser?: boolean,
@@ -153,8 +186,20 @@ export const checkCredentialForSignIn = async (data: {
         });
 
     }
+    let password = "";
 
-    if (sha256(data.password + userInDB.user.salt) !== userInDB.user.password) {
+    try {
+        
+        password = crypto.createHash('sha512').update(
+            userInDB.user.salt.split("").sort().join("") + data.password + userInDB.user.salt
+        ).digest('hex');
+
+    } catch (error) {
+        log.error("user", "checkCredentialForSignIn: " + error.toString());
+        return failed();
+    }
+
+    if (password !== userInDB.user.password) {
         return failed();
     }
 
@@ -186,19 +231,20 @@ export const checkCredentialForSignIn = async (data: {
 
     }
 
-    const sessionData = await createNewSession(userInDB.user, data.ipadress, data.userAgent);
-    if (!sessionData) return call(true);
-
-    let continueUrl: string = ""; 
-    if (data.serviceid) {
-        continueUrl = await getBuildedContinueForService(data.serviceid, sessionData.sessionsToken, data.checkContinue);
-    } else {
-        continueUrl = checkContinueLocation(data.checkContinue);
-    }
-
+    const {
+        setCookieToken,
+        continueUrl
+    } = await handleCreateNewSession({
+        checkContinue: data.checkContinue,
+        ipAddress: data.ipadress,
+        serviceID: data.serviceid,
+        userAgent: data.userAgent,
+        user: userInDB
+    });
+    
     call(false, {
         credentialsAreOk: true,
-        cookieToken: sessionData.jwt,
+        setCookieToken,
         continue: continueUrl
     });
 
@@ -212,41 +258,41 @@ export const createNewUser = async (data: {
     checkContinue: string,
     ipadress: string,
     userAgent: string
-}, call: {(err: boolean, data?: { cookieToken: string, continue: string }): void}) => {
+}, call: {(err: boolean, data?: { setCookieToken: string, continue: string }): void}) => {
 
     try {
 
         // await data.token.destroy();
 
-        crypto.randomBytes(512, async (err, randomBytes) => {
-            if (err) throw "crypto error";
-                
-            const salt = randomBytes.toString("hex");
-            const password = crypto.createHash('sha256').update(data.password + salt).digest('hex');
+        const salt = await crypto.randomBytes(64).toString("hex");
 
-            const user = await User.create({
-                name: data.username,
-                password,
-                salt
-            });
-                
-            if (!user) throw "Benutzer konnte nicht erstellt werden.";
+        const password = crypto.createHash('sha512').update(
+            salt.split("").sort().join("") + data.password + salt
+        ).digest('hex');
+
+        const user = await User.create({
+            name: data.username,
+            password,
+            salt
+        });
             
-            const sessionData = await createNewSession(user, data.ipadress, data.userAgent);
-            if (!sessionData) return call(true);
+        if (!user)
+            throw "Benutzer konnte nicht erstellt werden.";
+        
+        const {
+            setCookieToken,
+            continueUrl
+        } = await handleCreateNewSession({
+            checkContinue: data.checkContinue,
+            ipAddress: data.ipadress,
+            serviceID: data.serviceid,
+            userAgent: data.userAgent,
+            user: user
+        });
 
-            let continueUrl: string = ""; 
-            if (data.serviceid) {
-                continueUrl = await getBuildedContinueForService(data.serviceid, sessionData.sessionsToken, data.checkContinue);
-            } else {
-                continueUrl = checkContinueLocation(data.checkContinue);
-            }
-    
-            call(false, {
-                cookieToken: sessionData.jwt,
-                continue: continueUrl
-            });
-
+        call(false, {
+            setCookieToken,
+            continue: continueUrl
         });
 
     } catch (e) {
@@ -260,36 +306,28 @@ export const createNewUser = async (data: {
 }
 
 
-export const checkIsTokanValid = async (jwt_token: string)  => {
+export const checkIsTokanValid = async (session: string)  => {
 
     try {
 
-        if (!jwt_token) return null;
+        if (!session) return null;
 
-        const jwt_data = (jwt.verify(jwt_token, config.get("jsonwebtoken:secret")) as JWT_SESSION_TOKEN);
-
-        // the token is from an service
-        if (jwt_data.service_id !== "odmin") {
+        const dbSession = await getSessionByToken(session);
+        if (!dbSession || dbSession.valid !== true)
             return null;
-        }
-        
-        const userdb = await getUserByID(jwt_data.user_id);
 
-        const session = await getSessionByToken(jwt_data.session_token);
+        const dbUser = await getUserByID(dbSession.user_id);
 
-        if (session && userdb)  {
+        if (!dbUser) 
+            return null;
 
-            if (session.valid !== true)
-                return null;
-            
-            return {
-                id: userdb.id,
-                username: userdb.name,
-                role: userdb.role,
-                token: jwt_data.session_token,
-                userdb: userdb,
-                session: session
-            }
+        return {
+            id: dbUser.id,
+            username: dbUser.name,
+            role: dbUser.role,
+            userdb: dbUser,
+            sessionDB: dbSession,
+            session: session
         }
         
     } catch (e) {
@@ -367,25 +405,19 @@ export const changeUsersPassword = async (userid: number, data: {
             const user = await getUserByID(userid);
             if (!user) throw "Benutzer nicht gefunden.";
     
-            crypto.randomBytes(512, async (err, randomBytes) => {
-                if (err) return call(false, { updateSucces: false });
-    
-                const salt = randomBytes.toString("hex");
-                const hash = crypto.createHash('sha256');
-                const hashPassword = hash.update(data.password + salt).digest('hex');
-                
-                await user.update({
-                    password: hashPassword,
-                    salt
-                });
+            const salt = await crypto.randomBytes(64).toString("hex");
 
-                sendNotification(userid, "changePassword");
-        
-                call(false, {
-                    updateSucces: true
-                }); 
+            const password = crypto.createHash('sha512').update(
+                salt.split("").sort().join("") + data.password + salt
+            ).digest('hex');
+                
+            await user.update({ password, salt });
+
+            sendNotification(userid, "changePassword");
     
-            })
+            call(false, {
+                updateSucces: true
+            }); 
 
         })
 

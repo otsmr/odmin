@@ -38,6 +38,30 @@ router.get("/cron", async (req: any, res: any, next: any) => {
 
 })
 
+router.use("/set-cookie", async (req, res, next) => {
+
+    res.header('Content-Type', 'application/json');
+    res.header("Access-Control-Allow-Credentials", true);
+    res.header("Access-Control-Allow-Origin", config.get("frontend-base-url"));
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
+    let db = await getToken("odmin-set-cookie", String(req.body.setCookieToken));
+
+    if (!db.err && db.token) {
+
+        res.cookie('token', db.token.value, { httpOnly: true });
+
+        try {
+            await db.token.destroy();
+        } catch (error) {
+            // console.log(error);
+        }
+    }
+
+    res.send(JSON.stringify({status: "ok"}));
+
+});
+
 router.post("/service/getuserfromtoken", async (req: any, res: any, next: any) => {
 
     if (!req.body.token || !req.body.secret) {
@@ -118,7 +142,7 @@ router.get("/service/user/sigin", async (req: any, res: any, next: any) => {
         const session = await checkIsTokanValid(req.cookies.token);
 
         if (session) {
-            let continueUrl = await getBuildedContinueForService(req.query.serviceid, session.token, req.query.continue);
+            let continueUrl = await getBuildedContinueForService(req.query.serviceid, session.session, req.query.continue);
             
             res.redirect(continueUrl);
             return;
@@ -180,6 +204,14 @@ router.get("/user/logout/:sessiontoken", async (req: any, res: any, next: any) =
 
     const redirectTo = await handleLogout(String(req.params.sessiontoken))
     
+    res.redirect(redirectTo);
+
+})
+
+router.get("/user/logout", async (req: any, res: any, next: any) => {
+
+    const redirectTo = await handleLogout(String(req.cookies.token) || "")
+        
     res.redirect(redirectTo);
 
 })

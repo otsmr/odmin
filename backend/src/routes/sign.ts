@@ -52,7 +52,8 @@ export default (socket, slog) => {
 
         const user = await getUserByCookie(socket);
     
-        if (user) return call(false, true, user);
+        if (user) 
+            return call(false, true, user);
 
         return call(false, false);
 
@@ -189,11 +190,12 @@ export default (socket, slog) => {
     
     })
 
-    .on("/sign/privacyaccepted", (call: {(err: boolean, data?: { cookieToken: string}): void}) => {
+    .on("/sign/privacyaccepted", (call: {(err: boolean, data?: { setCookieToken : string}): void}) => {
 
         slog("API /sign/privacyaccepted");
 
-        if (signUpData.username === "") return call(true);
+        if (signUpData.username === "")
+            return call(true);
 
         createNewUser({
             ...signUpData,

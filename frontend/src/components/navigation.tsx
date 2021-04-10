@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, Route } from 'react-router-dom';
 
 import logo from "../assets/img/logo.svg";
@@ -63,15 +63,17 @@ export default function (props: {
 }) {
 
     const [isNavOpen, setIsNavOpen] = useState(true);
+    const [services, setServices] = useState(([] as {
+        name: string
+        homepage: string
+    }[]));
 
-    let logoutToken = "";
+    useEffect(() => {
 
-    try {
-        //TODO: token will be an HttpOnly token...
-        logoutToken =  JSON.parse(atob(document.cookie.split("=")[document.cookie.split("=").indexOf("token")+1].split(".")[1])).session_token;
-    } catch (error) {
-        
-    }
+        //TODO: load setServices
+
+
+    }, []);
 
     return (
         <>
@@ -90,16 +92,17 @@ export default function (props: {
                     <Dropmenu icon="fas fa-layer-group">
                         <>
                             <span className="title">Anwendungen</span>
-                            <a href="https://otizen.de" target="_blank" rel="noopener noreferrer"><li>verschlüsselte Notizen</li></a>
-                            <a href="https://oabos.de" target="_blank" rel="noopener noreferrer"><li>anonyme Abos</li></a>
-                            <a href="https://osurl.de" target="_blank" rel="noopener noreferrer"><li>Kurz-URL-Dienst</li></a>
+                            {services.map(e => {
+                                <a href={e.homepage} target="_blank" rel="noopener noreferrer"><li>{e.name}</li></a>
+
+                            })}
                         </>
                     </Dropmenu>
 
                     <Dropmenu icon="fas fa-user">
                         <>
                             <span className="title">{props.username}</span>
-                            <a href={(window as any).API_BASE + "/api/v0/user/logout/" + logoutToken}><li>Ausloggen</li></a>
+                            <a href={(window as any).API_BASE + "/api/v0/user/logout/"}><li>Ausloggen</li></a>
                         </>
                     </Dropmenu>
 

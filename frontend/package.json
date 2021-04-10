@@ -12,7 +12,7 @@
     "extends": "react-app"
   },
   "dependencies": {
-    "socket.io-client": "^4.0.1"
+    "socket.io-client": "^2.4.0"
   },
   "devDependencies": {
     "@types/react": "^16.9.41",

@@ -66,7 +66,7 @@ export default function () {
         }, (err: boolean, data: {
             credentialsAreOk: boolean,
             isLocked?: boolean,
-            cookieToken?: string,
+            setCookieToken?: string,
             continue: string,
             isWebAuthnUser?: boolean,
             isTwoFaUser?: boolean,
@@ -101,16 +101,24 @@ export default function () {
             }
 
             if (data.credentialsAreOk) {
-                //! FIXME: HttpOnly Cookie verwenden !!!! 
-                setCookie("token", data.cookieToken || "");
+                                
                 setUsername("");
                 setPassword("");
 
                 setIsSignSucces(true);
 
-                setTimeout(() => {
+                fetch((window as any).API_BASE + "/api/v0/set-cookie", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({setCookieToken: data.setCookieToken})
+                })
+                .then(e => e.json())
+                .then(e => {
                     (window as any).location.href = data.continue;
-                }, 500);
+                })
 
                 return;
             }

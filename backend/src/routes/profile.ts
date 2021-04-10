@@ -35,12 +35,15 @@ export default (socket, slog) => {
         if (!user) return call(false);
         
         const cookies = cookie.parse(socket.handshake.headers.cookie || "");
-        const userJWT = await checkIsTokanValid(cookies.token);
+        let sessionData = await checkIsTokanValid(cookies.token);
+        if (!sessionData) {
+            return call(false);
+        }
+        const session = sessionData.sessionDB;
 
         // FIXME: ? userJWT not defined ?
         
         const notify = await getNotificationsByUserID(user.userid);
-        const session = await getSessionByToken(userJWT?.token)
                 
         const options = {
             email: notify?.email || "",

@@ -24,10 +24,10 @@ export default (sequelize, DataTypes) => {
             defaultValue: 'viewer'
         },
         password: {
-            type: DataTypes.STRING(70),
+            type: DataTypes.STRING(128),
         },
 		salt: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING(128),
             allowNull: false
         },
         twofa: {

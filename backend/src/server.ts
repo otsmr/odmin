@@ -1,7 +1,7 @@
 import { createServer } from 'http'
 import morgan = require("morgan")
 import * as express from "express"
-import * as socket from "socket.io"
+const socket = require("socket.io");
 import * as cookieParser from 'cookie-parser'
 import * as bodyParser from 'body-parser'
 
@@ -18,19 +18,22 @@ import useSignSocket from "./routes/sign"
 import useProfileSocket from "./routes/profile"
 import useSettingsSocket from "./routes/settings/index"
 import useAdminSocket from "./routes/admin/index"
-import { readFileSync } from 'fs'
+import { readFileSync, existsSync } from 'fs'
 import { join } from 'path'
 
-
 const app = express();
-const io = socket();
+const port = config.get("server:port") || 8080;
+app.set('port', port);
+
+const server = createServer(app);
+const io = socket(server);
 
 morgan.token('pseudo-remote-addr', function getId (req: any) {
     return req["pseudo-remote-addr"];
 })
 
 app.use((req, res, next) => {
-    let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     if (typeof ip === "object") {
         ip = ip[0];
     }
@@ -56,7 +59,11 @@ app.use(express.static(__dirname + '/public', {
 }));
 
 app.use((req, res) => {
-    const indexHtml = readFileSync(join(__dirname, '/public/index.html')).toString();
+    const indexPath = join(__dirname, "public", 'index.html');
+    if (!existsSync(indexPath)) {
+        return res.send("");
+    }
+    const indexHtml = readFileSync(indexPath).toString();
     return res.send(indexHtml);
 })
 
@@ -80,12 +87,6 @@ io.on('connection', (socket) => {
 
 });
 
-const port = config.get("server:port") || 8080;
-app.set('port', port);
-
-const server = createServer(app);
-
-io.attach(server);
 
 server.listen(port, () => {
     database.sequelize.sync(); 

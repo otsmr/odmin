@@ -2,23 +2,14 @@
 import { Session } from "../initdb";
 
 import * as crypto from 'crypto';
-import * as jwt from 'jsonwebtoken';
 
 import log from "../../utils/logs"
-import config from "../../utils/config"
 
 import { sendNotification } from "../../mail/notify";
 import { getLocationFromIP, getRealIpInDevMode } from "../../utils/ip-address";
 
-export interface JWT_SESSION_TOKEN {
-    session_token: string
-    user_id: number
-    user_name: string
-    user_role: string
-    service_id: string
-}
 
-export const createNewSession = async (user: any, ipadress?: string, userAgent?: string) => {
+export const createNewSession = async (user: any, ipadress?: string, userAgent?: string): Promise<string | null> => {
 
     try {
 
@@ -34,14 +25,6 @@ export const createNewSession = async (user: any, ipadress?: string, userAgent?:
 
         if (!session) {
             return null;
-        }
-
-        const jwtData: JWT_SESSION_TOKEN = {
-            user_id: user.id,
-            user_name: user.name,
-            user_role: user.role,
-            session_token: sessions.token,
-            service_id: "odmin"
         }
 
         new Promise(async () => {
@@ -70,12 +53,7 @@ export const createNewSession = async (user: any, ipadress?: string, userAgent?:
 
         })
 
-        return {
-            jwt: jwt.sign(jwtData, config.get("jsonwebtoken:secret"), { 
-                expiresIn: '1d'
-            }),
-            sessionsToken: sessions.token
-        }
+        return sessions.token;
 
     } catch (error) {
         log.error("database", `createNewSession: ${error.toString()}`);
