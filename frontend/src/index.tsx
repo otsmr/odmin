@@ -64,7 +64,7 @@ function App () {
 
     if (!intervall) {
         checkLoggedIn(true);
-        intervall = setInterval(checkLoggedIn, 1000);
+        intervall = setInterval(checkLoggedIn, 10000);
     }
 
     // redirect api calls in dev 

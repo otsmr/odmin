@@ -16,7 +16,7 @@ export default function (props: {
                 <li>-&gt; alte Sessions weiterhin speichern?</li>
                 <li>Browser / Betriebsystem</li>
                 <li>Verbindungstyp (vpn, tor)</li>
-                <li>verdächtige Einstellungen (webauthn-key, passwort, benutzername)</li>
+                <li>verdächtige Einstellungen (passwort, benutzername)</li>
             </ul>
             <h2>Verhindern (wenn erkannt)</h2>
             <ul>

@@ -1,5 +1,3 @@
-import { DatabaseError } from "sequelize/types";
-
 export default (sequelize, DataTypes) => {
 
     const Token = sequelize.define('Token', {

@@ -1,10 +1,9 @@
 import { checkPassword } from "./../shared";
 import { updateUserAccount, changeUsersPassword, destroyUserAccount } from "../../database/services/user";
 import { checkPasswordDialog } from "../../utils/dialog"
-import { SocketWithData } from "../../server";
+import { SocketWithData } from "../../utils/socket";
 
 interface IInputProblem { inputid: string, msg: string, inputValue: string }
-
 
 export default (socket: SocketWithData, slog: {(msg: string): void}) => {
 

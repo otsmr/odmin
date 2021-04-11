@@ -11,5 +11,4 @@ socket.on("disconnect", () => {
     console.info("Verbindung vom Websocket unterbrochen");
 })
 
-
 export default socket;

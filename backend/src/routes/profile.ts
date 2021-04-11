@@ -6,21 +6,8 @@ import * as moment from "moment"
 moment.locale("de")
 
 import { confirm } from "../utils/dialog"
-import { SocketWithData } from "../server";
-
-export interface ISession {
-    id: number,
-    clientip: string;
-    browser: string;
-    os: string;
-    plz: string,
-    city: string,
-    country: string,
-    valid: boolean,
-    expiresInMoment: string;
-    createdAtMoment: string;
-}
-
+import { SocketWithData } from "../utils/socket";
+import { ISession } from "../database/models/sessions";
 
 export default (socket: SocketWithData, slog) => {
 
@@ -31,7 +18,7 @@ export default (socket: SocketWithData, slog) => {
         
         slog("API /personalinfo/summary");
 
-        const session = await socket.user.getDBSession();
+        const sessionDB = socket.user.sessionDB;
         const notify = await getNotificationsByUserID(socket.user.id);
                 
         const options = {
@@ -48,16 +35,19 @@ export default (socket: SocketWithData, slog) => {
             }
         }
         
-        if (session && session.type) {
+        if (sessionDB && sessionDB.type) {
 
             options.lastSession = {
                 ...options.lastSession,
-                ...session,
-                clientip: (session.clientip || "-"),
-                createdAtMoment: moment(new Date(session.createdAt).getTime()).format("DD.MM.YYYY HH:mm")
+                valid: sessionDB.valid,
+                plz: sessionDB.plz,
+                country: sessionDB.country,
+                city: sessionDB.city,
+                clientip: (sessionDB.clientip || "-"),
+                createdAtMoment: moment(new Date(sessionDB.createdAt).getTime()).format("DD.MM.YYYY HH:mm")
             }
 
-            const ua = new UAParser(session.userAgent);
+            const ua = new UAParser(sessionDB.userAgent);
 
             if (ua.getBrowser().name) {
                 options.lastSession.browser = ua.getBrowser().name + " " + ua.getBrowser().version;
@@ -122,7 +112,7 @@ export default (socket: SocketWithData, slog) => {
         }
 
         call(false, {
-            isTwoFAEnabled: (socket.user.twofa !== "") ? true : false,
+            isTwoFAEnabled: (socket.user.twofa) ? true : false,
             isExtendedLogEnabled: socket.user.saveLog,
             sessions
         });
@@ -136,14 +126,13 @@ export default (socket: SocketWithData, slog) => {
         if (!socket.user.isLoggedIn) 
             return call(true);
 
-        const session = await socket.user.getDBSession();
-
-        if (session.id === sessionid) {
+        if (socket.user.sessionDB.id === sessionid) {
             confirm(socket, {
                 title: "Aktuelle Session löschen?",
                 text: "Die aktuelle Session wird gelöscht und Sie müssen sich erneut anmelden.",
                 onSuccess: async () => {
-                    await session.destroy();
+                    await socket.user.sessionDB.destroy();
+                    await socket.user.checkToken();
                     call(false);
                 }
             })

@@ -1,7 +1,6 @@
 import * as moment from "moment"
 import { getAllUsers } from "../../database/services/user";
-import { ISession } from "../profile";
-import { SocketWithData } from "../../server";
+import { SocketWithData } from "../../utils/socket";
 
 interface IUser {
     id: number,
@@ -9,17 +8,6 @@ interface IUser {
     enabled: boolean,
     role: string,
     createdAt: string
-}
-
-interface IUserAll extends IUser {
-    isTwoFAEnabled: boolean,
-    isWebAuthnInUse: boolean,
-    lastLogin: string,
-    updatedAt: string,
-    sessions: ISession[],
-    chanels: {
-        email: string
-    }
 }
 
 function getHumanTime (dbTime: string) {

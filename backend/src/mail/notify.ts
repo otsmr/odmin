@@ -38,8 +38,6 @@ export function sendNotification (userid, type) {
                 break;
         }
 
-        console.log("isSendMail", isSendMail);
-
         if (!isSendMail) {
             return;
         }
@@ -64,7 +62,6 @@ export function sendNotification (userid, type) {
 
     }).catch(e => {
         logs.error("notifications", "sendNotification: " + JSON.stringify(e));
-        console.log(e);
     });
 
 }

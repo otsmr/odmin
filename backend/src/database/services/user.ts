@@ -11,19 +11,21 @@ import { checkUserName } from '../../routes/shared';
 import { checkPasswordDialog } from '../../utils/dialog';
 import { sendNotification } from '../../mail/notify';
 import { checkContinueLocation, getServiceByServiceId } from './service';
+import { IUser } from '../models/user';
 
 
-export const getUserByID =  async (userid) => {
+export const getUserByID =  async (userID: number): Promise<null | any | IUser> => {
 
     try {
 
-        const user = await User.findByPk(userid);
-        if (!user) throw "user not found";
+        const user = await User.findByPk(userID);
+        if (!user)
+            return null;
 
         return user;
         
     } catch (e) {
-        // log.error("database", `getUserByID: ${e.toString()}` );
+        log.error("database", `getUserByID: ${e.toString()}` );
         return null;
     }
 
@@ -296,32 +298,21 @@ export const createNewUser = async (data: {
 }
 
 
-export const checkIsTokenValid = async (session: string)  => {
+export const getSessionIfValidBySessionToken = async (sessionToken: string)  => {
 
     try {
 
-        if (!session) return null;
-
-        const dbSession = await getSessionByToken(session);
-        if (!dbSession || dbSession.valid !== true)
+        if (!sessionToken)
             return null;
 
-        const dbUser = await getUserByID(dbSession.user_id);
-
-        if (!dbUser) 
+        const sessionDB = await getSessionByToken(sessionToken);
+        if (!sessionDB || sessionDB.valid !== true)
             return null;
 
-        return {
-            id: dbUser.id,
-            username: dbUser.name,
-            role: dbUser.role,
-            userdb: dbUser,
-            sessionDB: dbSession,
-            session: session
-        }
+        return sessionDB;
         
     } catch (e) {
-        log.error("database", `checkIsTokenValid: ${e.toString()}` );
+        log.error("database", `getSessionIfValidBySessionToken: ${e.toString()}` );
     }
     
     return null;

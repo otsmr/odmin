@@ -1,7 +1,7 @@
 import { createServer } from 'http'
 import { readFileSync, existsSync } from 'fs'
 import { join } from 'path'
-
+import * as crypto from 'crypto';
 import morgan = require("morgan")
 import * as express from "express"
 import * as cookie from "cookie"
@@ -24,7 +24,7 @@ import useProfileSocket from "./routes/profile"
 import useSettingsSocket from "./routes/settings/index"
 import useAdminSocket from "./routes/admin/index"
 import { signOutAlert } from './routes/shared';
-import { getSessionByToken } from './database/services/session';
+import { SocketWithData, SocketUser } from './utils/socket'
 
 const app = express();
 const port = config.get("server:port") || 8080;
@@ -53,6 +53,26 @@ app.use(morgan(`:pseudo-remote-addr - ":method :url HTTP/:http-version" :status 
 app.use(cookieParser());
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+
+    // https://developer.mozilla.org/en-US/docs/Web/Security
+
+    (req as any).cspNonce = crypto.randomBytes(16).toString('base64');
+    
+    res.append("X-Content-Type-Options", "nosniff");
+    res.append("Referrer-Policy", "no-referrer");
+    res.append("Access-Control-Allow-Origin", config.get("frontend-base-url"));
+    res.append("X-Frame-Options", "DENY");
+
+    res.append("Content-Security-Policy", `default-src 'self'; img-src 'self' 'unsafe-inline' data:; script-src 'nonce-${(req as any).cspNonce}'`);
+
+    res.append("X-Bug-Bounty", "More info here: /.well-known/security.txt");
+    res.header("X-Powered-By", "Odmin");
+
+    next();
+    
+})
+
 app.use("/api/v0", apiMiddleware);
 
 app.get("/index.html", (req, res, next) => {
@@ -68,75 +88,12 @@ app.use((req, res) => {
     if (!existsSync(indexPath)) {
         return res.send("");
     }
-    const indexHtml = readFileSync(indexPath).toString();
+    let indexHtml = readFileSync(indexPath).toString();
+
+    indexHtml = indexHtml.replace(/<script/g, `<script nonce="${(req as any).cspNonce}" `)
+
     return res.send(indexHtml);
 })
-
-export class SocketUser {
-
-    _sessionToken: string | null;
-    _userID: number;
-    _userRole: string;
-    _userName: string;
-    _valid: boolean;
-    _saveLog: boolean;
-    _twofa: string;
-
-    constructor (sessionToken: string | null) {
-        this._sessionToken = sessionToken;
-        this.checkToken();
-    }
-
-    checkToken () {
-
-        return new Promise((re, rj) => {
-
-            // TODO: checktoken and save data
-
-            re();
-
-            rj();
-
-        });
-
-    }
-
-    getDBSession (): Promise<any | null> {
-
-        return new Promise(async (re, rj) => {
-            re(await getSessionByToken(this._sessionToken));
-        });
-
-    } 
-
-    get isLoggedIn () {
-        return this._valid;
-    }
-
-    get twofa () {
-        return this._twofa;
-    }
-    get saveLog () {
-        return this._saveLog;
-    }
-
-    get name () {
-        return this._userName;
-    }
-
-    get role () {
-        return this._userRole;
-    }
-
-    get id () {
-        return this._userID;
-    }
-
-}
-
-export interface SocketWithData extends socket.Socket {
-    user: SocketUser
-}
 
 io.on('connection', async (socket: SocketWithData) => {
 
@@ -159,6 +116,10 @@ io.on('connection', async (socket: SocketWithData) => {
 
     socket.user = new SocketUser(cookies.token || "");
 
+    await socket.user.checkToken();
+
+    useSignSocket(socket, slog);
+    
     if (socket.user.isLoggedIn) {
 
         intervall = setInterval(() => {
@@ -178,10 +139,6 @@ io.on('connection', async (socket: SocketWithData) => {
         if (socket.user.role === "admin") {
             useAdminSocket(socket, slog);
         }
-
-    } else {
-
-        useSignSocket(socket, slog);
 
     }
 

@@ -5,7 +5,7 @@ import "./../assets/style/elements/form.scss"
 import "./../assets/style/pages/sign.scss"
 
 import socket from '../utils/socket';
-import { setCookie, blurAll, cleanUsername, getSearchLocation, setHttpOnlyCookie } from '../utils/utils';
+import { blurAll, cleanUsername, getSearchLocation, setHttpOnlyCookie } from '../utils/utils';
 
 import { checkService, IService, useLockedSign } from "./../components/LockedSign"
 import { Input, IInputProblem } from "../components/input"

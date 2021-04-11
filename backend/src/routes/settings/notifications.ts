@@ -15,8 +15,9 @@ interface ApiData {
         newsletter: string
     }
 }
+import { SocketWithData } from "../../utils/socket";
 
-export default (socket: any, slog: {(msg: string): void}) => {
+export default (socket: SocketWithData, slog: {(msg: string): void}) => {
 
     socket
 

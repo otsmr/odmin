@@ -1,0 +1,3 @@
+Contact: mailto:security@odmin.de
+Contact: https://github.com/otsmr/odmin
+Policy: https://tsmr.eu/security

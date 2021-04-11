@@ -8,6 +8,7 @@ mysql-database/
 
 # Backend
 backend/logs/
+backend/public/
 backend/database/
 config.json
 config.changed.json

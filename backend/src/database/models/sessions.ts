@@ -1,4 +1,15 @@
-import { DatabaseError } from "sequelize/types";
+export interface ISession {
+    id: number,
+    clientip: string;
+    browser: string;
+    os: string;
+    plz: string,
+    city: string,
+    country: string,
+    valid: boolean,
+    expiresInMoment: string;
+    createdAtMoment: string;
+}
 
 export default (sequelize, DataTypes) => {
 

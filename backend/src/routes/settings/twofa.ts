@@ -8,7 +8,7 @@ import { checkPasswordDialog } from "../../utils/dialog"
 import * as Speakeasy from "speakeasy";
 import * as QRCode from "qrcode";
 import { chunkArray } from "../../utils/utils";
-
+import { SocketWithData } from "../../utils/socket";
 interface IInputProblem { inputid: string, msg: string, inputValue: string }
 interface ITwoFAData {
     enabled?: boolean,
@@ -17,7 +17,7 @@ interface ITwoFAData {
     qrcode?: string
 }
 
-export default (socket: any, slog: {(msg: string): void}) => {
+export default (socket: SocketWithData, slog: {(msg: string): void}) => {
 
 
     let lastTwoFaSecret = null;
@@ -26,15 +26,12 @@ export default (socket: any, slog: {(msg: string): void}) => {
 
     .on("/settings/twofa/getstatus", async (call: {(err: boolean, data: ITwoFAData): void}) => {
 
-        if (!socket.user) return call(true, { message: "Nicht angemeldet" });
+        if (!socket.user.isLoggedIn)
+            return call(true, { message: "Nicht angemeldet" });
 
-        const userInDB = await getUserByID(socket.user.id);
-        if (!userInDB) return;
-
-        if (userInDB.twofa)
+        if (socket.user.twofa)
             return call(false, { enabled: true });
 
-        
         const secret = Speakeasy.generateSecret({ 
             length: 10,
             name: socket.user.name,
@@ -45,7 +42,8 @@ export default (socket: any, slog: {(msg: string): void}) => {
         const otpauth = `otpauth://totp/Odmin:${socket.user.name}?secret=${secret.base32}&period=30&digits=6&issuer=Odmin`;
 
         return QRCode.toDataURL(otpauth, (err: boolean, dataUrl: string) => {
-            if (err) return call(true, {"message": "QRCode konnte nicht erstellt werden"});
+            if (err)
+                return call(true, {"message": "QRCode konnte nicht erstellt werden"});
             call(false, {
                 enabled: false,
                 secret: chunkArray(secret.base32, 4).join(" "),

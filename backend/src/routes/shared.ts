@@ -1,6 +1,6 @@
 import { getUserByUsername } from "../database/services/user";
 import { alert } from "../utils/dialog"
-import { SocketWithData } from "../server";
+import { SocketWithData } from "../utils/socket";
 
 export function checkPassword (password: string, passwordWdh: string) {
 

@@ -1,6 +1,7 @@
 import * as moment from "moment"
 import { getAllServices, getServiceByName, updateCreateService, IService, removeServiceById, getServiceById } from "../../database/services/service";
 import config from "../../utils/config";
+import { SocketWithData } from "../../utils/socket";
 import { confirm } from "../../utils/dialog";
 
 interface IInputProblem { inputid: string, msg: string, inputValue: string }
@@ -52,17 +53,13 @@ async function checkAndSaveService (userid: number, service: IService, inputPref
 }
 
 
-export default (socket: any, slog: {(msg: string): void}) => {
-
-    // socket.user.role
+export default (socket: SocketWithData, slog: {(msg: string): void}) => {
 
     socket
     
     .on("/admin/services/getall", async (call: {(err: boolean, allServices?: IService[]): void}) => {
         
         slog("API /admin/services/getall");
-
-        if (!socket.user || socket.user.role !== "admin") return call(true);
 
         const services = await getAllServices();
 
@@ -84,11 +81,6 @@ export default (socket: any, slog: {(msg: string): void}) => {
 
         slog("API /admin/services/create");
 
-        if (!socket.user || socket.user.role !== "admin") return call(true, {
-            createSucesss: false,
-            problemMessage: "Keine ausreichenden Rechte"
-        });
-
         const isService = await getServiceByName(newService.name);
 
         if (isService) return call(false, {
@@ -108,11 +100,6 @@ export default (socket: any, slog: {(msg: string): void}) => {
 
         slog("API /admin/services/update");
 
-        if (!socket.user || socket.user.role !== "admin") return call(true, {
-            createSucesss: false,
-            problemMessage: "Keine ausreichenden Rechte"
-        });
-
         checkAndSaveService(socket.user.id, service, "edit-", call);
 
     })
@@ -120,8 +107,6 @@ export default (socket: any, slog: {(msg: string): void}) => {
     .on("/admin/services/delete", async (serviceid: number, call: {(err: boolean): void}) => {
 
         slog("API /admin/services/delete");
-
-        if (!socket.user || socket.user.role !== "admin") return call(true);
 
         const service = await getServiceById(serviceid);
         if (!service) return call(true);

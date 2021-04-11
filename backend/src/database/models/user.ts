@@ -1,3 +1,14 @@
+export interface IUser {
+    id: number
+    name: string
+    enabled: boolean
+    role: string
+    password: string
+    salt: string
+    twofa: string
+    saveLog: boolean 
+}
+
 export default (sequelize, DataTypes) => {
 
     const User = sequelize.define('User', {
@@ -50,7 +61,6 @@ export default (sequelize, DataTypes) => {
         User.hasMany(models.Session, { foreignKey: 'user_id', onDelete: "CASCADE" });
         User.hasMany(models.Notifications);
         User.hasMany(models.Service, { foreignKey: 'user_id', onDelete: "CASCADE"  });
-        User.hasMany(models.Webauthn, { foreignKey: 'user_id', onDelete: "CASCADE"  });
 
     };
     

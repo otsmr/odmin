@@ -20,7 +20,6 @@ const navlinks: any = {
         { title: "Konto-Einstellungen", link: "/settings/account" },
         { title: "Benachrichtigungen", link: "/settings/notifications" },
         { title: "Zwei-Faktor-Authentifizierung", link: "/settings/twofa" },
-        { title: "WebAuthn", link: "/settings/webauthn" },
         { title: "verdächtiges Verhalten", link: "/settings/suspicious-behavior" }
     ],
     "/admin": [

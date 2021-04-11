@@ -2,8 +2,9 @@
 import account from "./account"
 import notifications from "./notifications"
 import twofa from "./twofa"
+import { SocketWithData } from "../../utils/socket";
 
-export default (socket: any, slog: {(msg: string): void}) => {
+export default (socket: SocketWithData, slog: {(msg: string): void}) => {
 
     account(socket, slog);
     notifications(socket, slog);

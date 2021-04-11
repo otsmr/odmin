@@ -1,4 +1,5 @@
 import { getAllTokensByName, createNewToken, getToken, removeTokenById } from "../../database/services/token";
+import { SocketWithData } from "../../utils/socket";
 import * as moment from "moment"
 
 interface Token {
@@ -12,15 +13,11 @@ interface IInputProblem { inputid: string, msg: string, inputValue: string }
 
 export default (socket: any, slog: {(msg: string): void}) => {
 
-    // socket.user.role
-
     socket
     
     .on("/admin/invtetoken/getall", async (call: {(err: boolean, allTokens?: Token[]): void}) => {
         
         slog("API /admin/invitetoken/getall");
-
-        if (!socket.user || socket.user.role !== "admin") return call(true);
 
         const tokens = await getAllTokensByName("inviteToken");
 
@@ -43,12 +40,6 @@ export default (socket: any, slog: {(msg: string): void}) => {
     }): void}) => {
 
         slog("API /admin/invitetoken/create");
-
-        
-        if (!socket.user || socket.user.role !== "admin") return call(true, {
-            createSucesss: false,
-            problemMessage: "Keine ausreichenden Rechte"
-        });
 
         const isToken = await getToken("inviteToken", newToken);
 
@@ -77,8 +68,6 @@ export default (socket: any, slog: {(msg: string): void}) => {
     .on("/admin/invitetoken/delete", async (tokenid: number, call: {(err: boolean): void}) => {
 
         slog("API /admin/invitetoken/delete");
-
-        if (!socket.user || socket.user.role !== "admin") return call(true);
 
         call(!await removeTokenById(tokenid));
 

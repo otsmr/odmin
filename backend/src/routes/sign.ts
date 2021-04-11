@@ -2,7 +2,7 @@ import { getUserByUsername, createNewUser, checkCredentialForSignIn, checkUserIs
 import { getToken } from "../database/services/token";
 import { getServiceByServiceId } from "../database/services/service";
 import config from "../utils/config";
-import { SocketWithData } from "../server";
+import { SocketWithData } from "../utils/socket";
 
 function getClientIPFromSocket (socket) {
     let ip = socket.handshake.headers['x-forwarded-for']?.split(",")[0] || socket.handshake.address || socket.clientip;
@@ -49,7 +49,7 @@ export default (socket: SocketWithData, slog) => {
 
     .on("/sign/isloggedin", async (call: {(err: boolean, isLoggedIn: boolean, user?: { username: string, role: string, userid: number })}) => {
 
-        // slog("API /sign/isloggedin");
+        slog("API /sign/isloggedin");
 
         await socket.user.checkToken();
     
