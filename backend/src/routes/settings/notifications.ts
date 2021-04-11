@@ -2,7 +2,7 @@ import { getNotificationsByUserID, updateNotifications } from "../../database/se
 import { checkPasswordDialog, alert, prompt } from "../../utils/dialog";
 
 import { validateEmail } from "../../utils/utils";
-import sendMail from "../../mail/sendMail";
+import sendMail from "../../mail/email";
 import config from "../../utils/config";
 
 interface IInputProblem { inputid: string, msg: string, inputValue: string }

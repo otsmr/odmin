@@ -37,7 +37,6 @@ Object.keys(models).forEach((modelName) => {
 
 export const Token = models.Token;
 export const User = models.User;
-export const Webauthn = models.Webauthn;
 export const Session = models.Session;
 export const Service = models.Service;
 export const Notifications = models.Notifications;

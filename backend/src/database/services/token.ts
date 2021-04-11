@@ -32,9 +32,9 @@ export async function destroyExpiredTokens (): Promise<boolean> {
             token.destroy();
         }
 
-        // if (tokensRemoved > 0) {
+        if (tokensRemoved > 0) {
             log.info("cron", `${tokensRemoved} Tokens entfernt.`);
-        // }
+        }
         
     } catch (error) {
         log.error("database", `destroyExpiredTokens: ${error.toString()}`);

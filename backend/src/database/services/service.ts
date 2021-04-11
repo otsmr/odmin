@@ -22,6 +22,7 @@ export const getServiceByName =  async (name: string): Promise<IService | null> 
     return null;
 
 }
+
 export const getServiceBySecret =  async (secret: string): Promise<IService | null> => {
 
     const services = await Service.findAll({ where: { secret } });
@@ -30,6 +31,7 @@ export const getServiceBySecret =  async (secret: string): Promise<IService | nu
     return null;
 
 }
+
 export const getServiceByServiceId =  async (serviceid: string): Promise<IService | null> => {
 
     const services = await Service.findAll({ where: { serviceID: serviceid } });
@@ -123,6 +125,8 @@ export const updateCreateService =  async (userid: number, service: IService): P
 export const checkContinueLocation = (checkContinue: string): string => {
 
     const whitelist = [ "localhost" ];
+
+    // TODO: checkContinueLocation
 
     const domain = url.parse(checkContinue);
 

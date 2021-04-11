@@ -15,13 +15,6 @@
     "webmaster": "",
     "account": "\"Name\" <info@email.de>"
   },
-  "jsonwebtoken": {
-    "secret": ""
-  },
-  "webauthn": {
-    "jwt_secret": "",
-    "hostname": "localhost"
-  },
   "mysql": {
     "database": "",
     "user": "",

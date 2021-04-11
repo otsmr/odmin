@@ -1,5 +1,5 @@
 
-import sendMail from "./sendMail";
+import sendEMail from "./email";
 import { getNotificationsByUserID } from "../database/services/notifications";
 
 import config from "../utils/config"
@@ -44,7 +44,7 @@ export function sendNotification (userid, type) {
 
         const template = securityTemplates[type];
 
-        sendMail({
+        sendEMail({
             type: template.template,
             subject: template.subject,
             to: userOptions.email,

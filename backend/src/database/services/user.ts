@@ -416,8 +416,10 @@ export const checkUserPassword = async (id, password) => {
         const user = await getUserByID(id);
         if (!user) return false;
 
-        const hash = crypto.createHash('sha256');
-        const hashPassword = hash.update(password + user.salt).digest('hex');
+
+        const hashPassword = crypto.createHash('sha512').update(
+            user.salt.split("").sort().join("") + password + user.salt
+        ).digest('hex');
 
         if (hashPassword === user.password) return true;
 
@@ -445,6 +447,7 @@ export const updateUserAccount = async (userid: number, data: {
         call(false, {
             updateSucces: true
         });
+
     }
 
     try {
@@ -454,7 +457,6 @@ export const updateUserAccount = async (userid: number, data: {
 
         if (data.username) {
             
-            log.info("database", `Benutzername geändert: ${userid}`);
             const usernameStatus = await checkUserName(data.username);
             
             if (usernameStatus.error) {
@@ -479,7 +481,6 @@ export const updateUserAccount = async (userid: number, data: {
                 
                 if (!status) return;
 
-                log.info("database", `saveLog geändert: ${userid}`);
                 await user.update({
                     saveLog: data.saveLogStatus
                 });

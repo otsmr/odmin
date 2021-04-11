@@ -1,7 +1,5 @@
-
-import * as fs from "fs"
-
 import { join } from "path"
+import { readFileSync, existsSync } from "fs"
 
 import * as nodeMailer from "nodemailer"
 
@@ -20,12 +18,12 @@ export default (data: {
 
     const templateFilePath = join(__dirname, "templates", `${data.type}.html`);
 
-    if (!fs.existsSync(templateFilePath)) {
+    if (!existsSync(templateFilePath)) {
         log.error("notifications", `sendMail: template "${data.type}" not found`);
         return;
     }
 
-    let html = fs.readFileSync(templateFilePath, "utf-8").toString();
+    let html = readFileSync(templateFilePath, "utf-8").toString();
 
     for (const from in data.replace) {
         html = html.replace(`#${from}#`, data.replace[from]) //TODO: Reaplce width ejs
