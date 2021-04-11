@@ -63,8 +63,6 @@ export function useLockedSign (): {
             }) => {
 
                 if (err) return console.error(err);
-
-                console.log(data);
                 
                 if (!data.isLocked) {
                     return setIsLocked(false);
@@ -83,10 +81,8 @@ export function useLockedSign (): {
             setTimeout(updateLockedTime, 1000);
         }
 
-
         nextCheck--;
         istZeit = + new Date();
-
 
     }
 

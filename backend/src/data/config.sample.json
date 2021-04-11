@@ -16,9 +16,9 @@
     "account": "\"Name\" <info@email.de>"
   },
   "mysql": {
-    "database": "",
-    "user": "",
-    "pass": "",
+    "database": "odmin",
+    "user": "odmin",
+    "pass": "odmin",
     "host": "odmin_mysql",
     "port": 3306
   },
