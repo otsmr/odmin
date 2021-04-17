@@ -44,11 +44,14 @@ mkdir $__dirname/build/public
 mv $__dirname/frontend/build/* $__dirname/build/public
 
 rm -f $__dirname/build.zip
+rm -f -r $__dirname/build/logs
 
 mv $__dirname/build/node_modules/* /tmp/node_modules2749824792384749
 mv $__dirname/build/config.json $__dirname/build/config.build.json
 
-zip -r $__dirname/build.zip $__dirname/build
+cd $__dirname/build
+zip -r build.zip .
+mv $__dirname/build/build.zip $__dirname/build.zip
 
 mv $__dirname/build/config.build.json $__dirname/build/config.json
 mv /tmp/node_modules2749824792384749/* $__dirname/build/node_modules
