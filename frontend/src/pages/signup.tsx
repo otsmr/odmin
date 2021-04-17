@@ -202,8 +202,8 @@ export default function () {
             </div>
 
             <ul>
+                <a target="_blank" rel="noopener noreferrer" href="https://github.com/otsmr/odmin"><li>Projekt auf Github</li></a>
                 <a target="_blank" rel="noopener noreferrer" href="https://oproj.de/privacy"><li>Datenschutz</li></a>
-                <a target="_blank" rel="noopener noreferrer" href="https://oproj.de/terms"><li>Nutzungsbedingungen</li></a>
                 <a target="_blank" rel="noopener noreferrer" href="https://oproj.de/imprint"><li>Impressum</li></a>
             </ul>
 

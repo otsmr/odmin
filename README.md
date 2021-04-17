@@ -23,5 +23,5 @@ Required are docker and docker-compose.
 docker-compose up
 ```
 
-*E-Mail debugging**
+*E-Mail debugging*
 Test-Server: https://github.com/nodemailer/nodemailer-app

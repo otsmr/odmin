@@ -38,3 +38,12 @@
     }
 
 }
+
+@media (max-width: 500px) {
+
+    .radio-group {
+        min-width: unset;
+        width: 100%;
+    }
+
+}

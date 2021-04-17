@@ -167,43 +167,15 @@ body {
 
 @media (max-width: 500px){
 
-    body > footer {
+    html, body,
+    body > #root {
+        height: unset;
+    }
+
+    body .footer {
         display: none;
     }
-    body .aside {
-        height: 60px;
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 100%;
-        border-top-right-radius: 0;
-        z-index: 10000;
-        display: flex;
-
-        body .aside ul li.dropmenu {
-            padding: 3px 0;
-        }
-        ul.top {
-            position: absolute;
-            right: 0;
-            li {
-                font-size: 34px;
-                padding: 0;
-                margin: -4px 5px;
-            }
-        }
-        ul.bottom {
-            position: unset;
-            display: flex;
-            margin-left: 17px;
-        }
-        div.logo {
-            position: unset;
-            height: 60px;
-            padding: 14px 4px;
-        }
-    }
-
+    
     body {
         width: 100%;
         height: 100%;
@@ -213,37 +185,6 @@ body {
         margin-top: 60px;
         min-height: calc(100vh - 60px);
         position: relative;
-    }
-    body .navigation {
-        transition: unset;
-    }
-    body .navigation.open {
-        min-width: calc(100%);
-        max-width: calc(100%);
-        width: calc(100%);
-        position: fixed;
-        z-index: 100000;
-    }
-    body .aside ul li.dropmenu.open ul.menu {
-        display: block;
-    }
-    body .aside ul li.dropmenu ul.menu {
-        transform: unset;
-        bottom: unset;
-        min-width: unset;
-        left: unset;
-        box-shadow: unset;
-        width: auto;
-        display: none;
-    }
-    body .navigation .links ul a li {
-        width: 100%;
-        font-size: 22px;
-        text-align: center;
-    }
-    body .navigation header {
-        text-align: center;
-        margin-top: 40px;
     }
 
 }

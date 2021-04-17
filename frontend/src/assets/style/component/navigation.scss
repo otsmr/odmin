@@ -85,3 +85,25 @@ body .navigation {
     }
 
 }
+
+@media (max-width: 500px){
+    body .navigation {
+        transition: unset;
+    }
+    body .navigation.open {
+        min-width: calc(100%);
+        max-width: calc(100%);
+        width: calc(100%);
+        position: fixed;
+        z-index: 100000;
+    }
+    body .navigation .links ul li {
+        width: 100%;
+        font-size: 22px;
+        text-align: center;
+    }
+    body .navigation header {
+        text-align: center;
+        margin-top: 40px;
+    }
+}

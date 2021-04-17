@@ -56,12 +56,15 @@ function Dropmenu (props: {
 
 }
 
+let isNavOpenGlobal = false;
+let isClickEvent = false;
+
 export default function (props: {
     username: string,
     role: string
 }) {
 
-    const [isNavOpen, setIsNavOpen] = useState(true);
+    const [isNavOpen, setIsNavOpen] = useState(window.innerWidth > 500);
     const [services, setServices] = useState(([] as {
         name: string
         homepage: string
@@ -69,10 +72,21 @@ export default function (props: {
 
     useEffect(() => {
 
+        isNavOpenGlobal = isNavOpen;
+
+
+        if (!isClickEvent) {
+            window.addEventListener("click", () => {
+                if (isNavOpenGlobal && window.innerWidth <= 500)
+                    setIsNavOpen(false);
+            });
+            isClickEvent = true;
+        }
+
         //TODO: load setServices
 
 
-    }, []);
+    }, [isNavOpen]);
 
     return (
         <>
