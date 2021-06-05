@@ -1,27 +1,28 @@
-Readme is just a brainstorming for now...
-
-
 # Odmin
-Simple user management with the aim to learn common web security vulnerability.
+I created this project to provide a privacy compliant and feature rich "sign in with" solution for my own websites. In the meantime my focus has changed to web application security. It is therefore explicitly allowed to hack my own instance under odmin.de - and if the hack impresses me there is also a small bug bounty :)
 
 ![Dashboard](docs/dashboard.png "Dashboard")
 
-
-## Goals
-
-## check for web security vulnerabilities
-
-- logging + monitoring
-- dependencies: https://medium.com/hackernoon/im-harvesting-credit-card-numbers-and-passwords-from-your-site-here-s-how-9a8cb347c5b5
-- id -> use uuidv4 
-
-# getting started
-
-Required are docker and docker-compose.
+## Let's Hack
+It is very easy to get Odmin up and running (but it does require docker and docker-compose):
 
 ```bash
 docker-compose up
 ```
 
-*E-Mail debugging*
-Test-Server: https://github.com/nodemailer/nodemailer-app
+Configurations can be adjusted here after startup: `odmin/docker-data/odmin/config.json`
+
+## Goals
+
+- Two-factor authentication
+- WebAuthn (not yet implemented)
+- DSGVO compliant (Privacy-by-Design)
+- modern and intuitive design
+- open source project
+- "Login-with" solution for *own* websites (cross-domain)
+
+
+## ToDo
+
+- id -> use uuidv4
+- WebAuthn
