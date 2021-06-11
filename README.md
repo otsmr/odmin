@@ -10,7 +10,17 @@ It is very easy to get Odmin up and running (but it does require docker and dock
 docker-compose up
 ```
 
-Configurations can be adjusted here after startup: `odmin/docker-data/odmin/config.json`
+Configurations can be adjusted here after startup: `odmin/docker-data/odmin/config.json`  
+
+The different pages are available under the following port number:  
+
+| Page | Port |
+| ----- | --- |
+| mysql | 10001 |
+| phpMyAdmin | [10002](http://localhost:10002) (Username:Password: `root:root`)
+| Backend (API) | [10003](http://localhost:10003) |
+| Frontend | [10004](http://localhost:10004) |  
+
 
 ## Goals
 

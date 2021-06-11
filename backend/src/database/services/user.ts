@@ -31,6 +31,26 @@ export const getUserByID =  async (userID: number): Promise<null | any | IUser> 
 
 }
 
+export const isAdminUserExists = async (): Promise<boolean> => {
+
+    try {
+
+        const adminUser = await User.findAll({
+            where: {
+                role: "admin"
+            }
+        });
+    
+        return (adminUser !== null) && adminUser.length > 0;
+        
+    } catch (e) {
+        log.error("database", `isAdminUserExists: ${e.toString()}` );
+        return null;
+    }
+
+    
+}
+
 export const getAllUsers =  async () => {
 
     return await User.findAll();

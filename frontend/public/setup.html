@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="theme-color" content="#000000" />
+
+    <title>Kontoverwaltung - Odmin</title>
+
+    <link rel="shortcut icon" href="/img/favicon.png" type="image/png">
+
+    <link rel="stylesheet" href="/fonts/material/material.css">
+    <link rel="stylesheet" href="/fonts/roboto/roboto.css">
+    <link rel="stylesheet" href="/fonts/fontawesome/css/all.min.css">
+
+
+    <script>
+
+        console.info('%cOdmin ', 'font-size:51px;font-weight:bold');
+        console.info('%cOpen-Source Kontoverwaltung ', 'font-size:18px;')
+        console.info('%cGitHub: https://github.com/otsmr/odmin ', 'font-size:10px;')
+
+    </script>
+
+    <script>
+
+        window.API_BASE = location.protocol + "//" + location.host;
+
+        // in dev the backend is on different port
+        if (location.host.split(":")[0] === "localhost") {
+            window.API_BASE = location.protocol + "//" + location.host.split(":")[0] + ":10003";
+        }
+        
+    </script>
+
+
+</head>
+
+<body>
+    
+    TODO: Setup
+
+</body>
+
+</html>

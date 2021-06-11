@@ -25,6 +25,7 @@ import useSettingsSocket from "./routes/settings/index"
 import useAdminSocket from "./routes/admin/index"
 import { signOutAlert } from './routes/shared';
 import { SocketWithData, SocketUser } from './utils/socket'
+import { isAdminUserExists } from './database/services/user';
 
 const app = express();
 const port = config.get("server:port") || 8080;
@@ -73,8 +74,6 @@ app.use((req, res, next) => {
     
 })
 
-app.use("/api/v0", apiMiddleware);
-
 app.get("/index.html", (req, res, next) => {
 	res.redirect("/");
 })
@@ -83,7 +82,20 @@ app.use(express.static(__dirname + '/public', {
     index: false
 }));
 
+app.use(async (req, res, next) => {
+
+    if (await isAdminUserExists()) {
+        return next();
+    }
+
+    res.redirect(config.get("frontend-base-url") + "/setup.html");
+
+})
+
+app.use("/api/v0", apiMiddleware);
+
 app.use((req, res) => {
+
     const indexPath = join(__dirname, "public", 'index.html');
     if (!existsSync(indexPath)) {
         return res.send("");
@@ -93,9 +105,15 @@ app.use((req, res) => {
     indexHtml = indexHtml.replace(/<script/g, `<script nonce="${(req as any).cspNonce}" `)
 
     return res.send(indexHtml);
+
 })
 
 io.on('connection', async (socket: SocketWithData) => {
+
+    if (!await isAdminUserExists()) {
+        socket.emit("redirect-to-setup");
+        return;
+    }
 
     function slog (msg: string) {
         if (config.get("runmode") === "development")

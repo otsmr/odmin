@@ -58,9 +58,11 @@ function App () {
         socket.on("disconnect", (_: any) => setIsSockedConnected(false));
         socket.on("connect", (_: any) => setIsSockedConnected(true));
 
+        socket.on("redirect-to-setup", () => {
+            (window as any).location.href = (window as any).API_BASE + "/setup"
+        })
+
     }, [])
-
-
 
     if (!intervall) {
         checkLoggedIn(true);
