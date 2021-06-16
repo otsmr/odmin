@@ -23,7 +23,7 @@ export function Input (props: {
     }
 
     return (
-        <div className={(isProblem) ? "input-invalid" : ""}>
+        <div key={props.inputid} className={((isProblem) ? "input-invalid" : "")}>
             { props.children }
             <span>{(isProblem) ? props.problemWithInput.msg : ""}</span>
         </div>

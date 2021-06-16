@@ -20,12 +20,12 @@ import database from "./database/initdb"
 
 import apiMiddleware from "./routes/api"
 import useSignSocket from "./routes/sign"
+import useSetupSocket from "./routes/setup"
 import useProfileSocket from "./routes/profile"
 import useSettingsSocket from "./routes/settings/index"
 import useAdminSocket from "./routes/admin/index"
 import { signOutAlert } from './routes/shared';
 import { SocketWithData, SocketUser } from './utils/socket'
-import { isAdminUserExists } from './database/services/user';
 
 const app = express();
 const port = config.get("server:port") || 8080;
@@ -43,7 +43,7 @@ app.use((req, res, next) => {
     if (typeof ip === "object") {
         ip = ip[0];
     }
-    req["pseudo-remote-addr"] = (config.get("log:ip-addresses-pseudonymize")) ? pseudoIP(ip): ip;
+    req["pseudo-remote-addr"] = (config.get("privacy:ip-addresses-pseudonymize")) ? pseudoIP(ip): ip;
     next()
 })
 
@@ -84,11 +84,11 @@ app.use(express.static(__dirname + '/public', {
 
 app.use(async (req, res, next) => {
 
-    if (await isAdminUserExists()) {
+    if (config.get("mysql:database") !== "") {
         return next();
     }
 
-    res.redirect(config.get("frontend-base-url") + "/setup.html");
+    res.redirect(config.get("frontend-base-url") + "/setup");
 
 })
 
@@ -110,9 +110,8 @@ app.use((req, res) => {
 
 io.on('connection', async (socket: SocketWithData) => {
 
-    if (!await isAdminUserExists()) {
+    if (config.get("mysql:database") === "") {
         socket.emit("redirect-to-setup");
-        return;
     }
 
     function slog (msg: string) {
@@ -136,6 +135,7 @@ io.on('connection', async (socket: SocketWithData) => {
 
     await socket.user.checkToken();
 
+    useSetupSocket(socket, slog);
     useSignSocket(socket, slog);
     
     if (socket.user.isLoggedIn) {

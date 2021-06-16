@@ -10,7 +10,7 @@
     },
     "homepage": "./",
     "scripts": {
-        "dev": "concurrently \"cpx \\\"src/**/*.{html,json}\\\" build --watch\" \"tsc --watch\" \"nodemon build/server.js\"",
+        "dev": "concurrently \"cpx \\\"src/**/*.{html,json}\\\" build --watch\" \"tsc --watch\" \"nodemon --ignore config.json build/server.js\"",
         "build": "tsc"
     },
     "dependencies": {

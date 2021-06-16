@@ -21,7 +21,7 @@ export async function getRealIpInDevMode (ipadress: string): Promise<string> {
     ) {
         try {
             
-            let res = await fetch(config.get("ipinfoservice") + "/api/myip");
+            let res = await fetch(config.get("privacy:ip-localization-service") + "/api/myip");
             let data = await res.json();
             ipadress = data.ip || "";
 
@@ -49,7 +49,7 @@ export async function getLocationFromIP (ipadress: string): Promise<{
 
     try {
                     
-        const response = await fetch(config.get("ipinfoservice") + "/api/ip", {
+        const response = await fetch(config.get("privacy:ip-localization-service") + "/api/ip", {
             method: 'POST',
             headers: {
               'Accept': 'application/json',

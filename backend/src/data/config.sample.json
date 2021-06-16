@@ -3,23 +3,22 @@
     "port": 3030
   },
   "runmode": "development | production",
-  "ipinfoservice": "https://ipinfo.oproj.de/",
   "frontend-base-url": "http://localhost:3000",
-  "log": {
-    "ip-addresses-pseudonymize": true
+  "privacy": {
+    "ip-addresses-pseudonymize": true,
+    "ip-localization-service": "https://ipinfo.oproj.de/"
   },
   "dev": {
     "invitetoken": "token"
   },
   "email": {
-    "webmaster": "",
     "account": "\"Name\" <info@email.de>"
   },
   "mysql": {
-    "database": "odmin",
-    "user": "odmin",
-    "pass": "odmin",
-    "host": "odmin_mysql",
+    "database": "",
+    "user": "",
+    "pass": "",
+    "host": "",
     "port": 3306
   },
   "smtp": {

@@ -20,6 +20,7 @@ import Security from "./pages/security"
 import Settings from "./pages/settings/index"
 import Admin from "./pages/admin/index"
 import Personalinfo from "./pages/personalinfo"
+import Setup from './pages/Setup';
 
 let intervall: any | undefined = undefined;
 let lastUser: any = null;
@@ -52,6 +53,8 @@ function App () {
 
     }
 
+    let location = (window as any).location;
+
 
     useEffect(() => {
 
@@ -59,7 +62,9 @@ function App () {
         socket.on("connect", (_: any) => setIsSockedConnected(true));
 
         socket.on("redirect-to-setup", () => {
-            (window as any).location.href = (window as any).API_BASE + "/setup"
+            if (location.pathname !== "/setup") {
+                location.href = (window as any).API_BASE + "/setup"
+            }
         })
 
     }, [])
@@ -70,7 +75,6 @@ function App () {
     }
 
     // redirect api calls in dev 
-    let location = (window as any).location;
     if (location.hostname === "localhost" && location.pathname.startsWith("/api")) {
         location.href = location.href.replace(location.protocol + "//" + location.host, (window as any).API_BASE);
         return null;
@@ -86,6 +90,7 @@ function App () {
 
                 <>
                     <div className="main">
+
                         <Navigation username={user.username} role={user.role} />
 
                         <Switch>
@@ -112,9 +117,6 @@ function App () {
 
                     <div className="footer">
                         <ul className="right">
-                            {/* <li className="darklightchange" title="Dunkles Design">
-                                <i className="toggle fas fa-toggle-off"></i>
-                            </li> */}
                             <li className={(isSockedConnected) ?  "" : "blink" } title={(isSockedConnected) ?  "Mit dem Server verbunden" : "Verbindung zum Server getrennt" }><i className="fas fa-plug"></i></li>
                         </ul>
                     </div>
@@ -126,6 +128,7 @@ function App () {
 
                 <Switch>                
 
+                    <Route path="/setup" component={Setup} />
                     <Route path="/signin" component={Signin} />
                     <Route path="/signup" component={Signup} />
                     <Route path="*">

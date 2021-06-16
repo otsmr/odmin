@@ -32,7 +32,7 @@ services:
     ports:
         - 10003:3030
     volumes:
-      - ./docker-data/odmin/:/odmin/backend/build/data:ro
+      - ./docker-data/odmin/:/odmin/backend/build/data
       - ./backend/:/odmin/backend
     depends_on:
         - db

@@ -18,16 +18,38 @@ export default new class {
             writeFileSync(this.defaultConfigPath, JSON.stringify({}));
         }
 
-        nconf.defaults(
-            JSON.parse(
-                readFileSync(this.defaultConfigPath).toString()
-            )
-        )
+        nconf.defaults(this.getSavedConfigs())
         
     }
 
+    getSavedConfigs () {
+        return JSON.parse(
+            readFileSync(this.defaultConfigPath).toString()
+        )
+    }
+
+
     get (param: string) {
         return  nconf.get(param);
+    }
+
+    set (param: string, value: any) {
+        nconf.set(param, value)
+
+        let params = param.split(":");
+
+        const configs = this.getSavedConfigs();
+
+        switch (params.length) {
+            case 1: configs[params[0]] = value; break;
+            case 2: configs[params[0]][params[1]] = value; break;
+        
+        }
+
+        writeFileSync(this.defaultConfigPath, JSON.stringify(configs, null, 4));
+        
+        nconf.defaults(this.getSavedConfigs());
+
     }
 
 }

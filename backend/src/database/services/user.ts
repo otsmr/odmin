@@ -260,7 +260,6 @@ export const checkCredentialForSignIn = async (data: {
 
 }
 
-
 export const createNewUser = async (data: {
     username: string,
     password: string,
