@@ -1,7 +1,6 @@
 import { createConnection, getDatabaseModels } from "../database/initdb";
 import config from "../utils/config";
 import { SocketWithData } from "../utils/socket";
-import { join } from "path"
 import * as crypto from 'crypto';
 
 

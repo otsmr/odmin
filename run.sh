@@ -1,5 +1,6 @@
+#!/bin/bash
 
-if [[ "$EUID" = 0 ]]; then
+if [ $(id -u) = 0 ]; then
     mkdir ./docker-data/odmin
     mkdir ./backend/build
 

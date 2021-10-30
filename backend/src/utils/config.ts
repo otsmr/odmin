@@ -15,7 +15,37 @@ export default new class {
     constructor () {
 
         if (!existsSync(this.defaultConfigPath)) {
-            writeFileSync(this.defaultConfigPath, JSON.stringify({}));
+            writeFileSync(this.defaultConfigPath, JSON.stringify({
+                "server": {
+                  "port": 3030
+                },
+                "runmode": "development", //  | production
+                "frontend-base-url": "http://localhost:1004",
+                "privacy": {
+                  "ip-addresses-pseudonymize": true,
+                  "ip-localization-service": "https://ipinfo.oproj.de/"
+                },
+                "dev": {
+                  "invitetoken": "token"
+                },
+                "email": {
+                  "account": "\"Name\" <info@email.de>"
+                },
+                "mysql": {
+                  "database": "",
+                  "user": "",
+                  "pass": "",
+                  "host": "",
+                  "port": 3306
+                },
+                "smtp": {
+                  "host": "",
+                  "port": "",
+                  "secure": "",
+                  "user": "",
+                  "pass": ""
+                }
+            }, null, 4));
         }
 
         nconf.defaults(this.getSavedConfigs())

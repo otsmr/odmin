@@ -19,7 +19,7 @@ export default function Setup ({}) {
         { label: "Username", value: "odmin", name: "mysql-user" },
         { label: "Password", value: "odmin", name: "mysql-pass" },
         { label: "Host", value: "odmin_mysql", name: "mysql-host" },
-        { label: "Port", value: 3306, name: "mysql-port", type: "number" },
+        { label: "Port", value: 10001, name: "mysql-port", type: "number" },
 
         { label: "Host", value: "", name: "smtp-host" },
         { label: "Port", value: "", name: "smtp-port", type: "number" },

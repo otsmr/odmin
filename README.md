@@ -4,13 +4,12 @@ I created this project to provide a privacy compliant and feature rich "sign in 
 ![Dashboard](docs/dashboard.png "Dashboard")
 
 ## Let's Hack
-It is very easy to get Odmin up and running (but it does require docker and docker-compose):
+1. Install Docker from [here](https://www.docker.com/products/docker-desktop)
+2. run `sudo ./run.sh`
+3. open `http://localhost:10004/`
+4. setup odmin
 
-```bash
-docker-compose up
-```
-
-Configurations can be adjusted here after startup: `odmin/docker-data/odmin/config.json`  
+Configurations can be adjusted here after setup: `odmin/docker-data/odmin/config.json`  
 
 The different pages are available under the following port number:  
 
