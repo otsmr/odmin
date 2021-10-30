@@ -26,7 +26,7 @@ Download the latest version at  [Releases](https://github.com/otsmr/odmin/releas
 2. run ``docker-compose up``
 3. If you are running on localhost, use a hosts entry. Production environments cannot run on localhost.  
     ``127.0.0.1   odmin.local``
-4. open ``odmin.local:10004``
+4. open ``http://odmin.local:10004/setup``
 5. Follow the setup  
     ``mysql-host: prod_odmin_mysql``
 6. Restarting the Docker container to reload the configurations 
