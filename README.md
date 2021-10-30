@@ -3,13 +3,33 @@ I created this project to provide a privacy compliant and feature rich "sign in 
 
 ![Dashboard](docs/dashboard.png "Dashboard")
 
-## Let's Hack
-1. Install Docker from [here](https://www.docker.com/products/docker-desktop)
-2. run `sudo ./run.sh`
-3. open `http://localhost:10004/`
-4. setup odmin
+## Development 
 
-Configurations can be adjusted here after setup: `odmin/docker-data/odmin/config.json`  
+1. install Docker from [here](https://www.docker.com/products/docker-desktop)
+2. run `sudo ./run.sh`
+3. wait until no more new logs come
+4. Press `strg + c` to stop and run `sudo ./run.sh` again
+5. open `http://localhost:10004/`
+6. setup odmin
+
+## Build
+
+1. install node and npm from [here](https://www.freecodecamp.org/news/how-to-install-node-js-on-ubuntu-and-update-npm-to-the-latest-version/)
+2. Install zip if not already installed
+3. run `./build.sh`
+
+## Production (with docker-container)
+
+Download the latest version at  [Releases](https://github.com/otsmr/odmin/releases) or build it yourself as described above.
+
+1. run ``docker-compose build``
+2. run ``docker-compose up``
+3. If you are running on localhost, use a hosts entry. Production environments cannot run on localhost.  
+    ``127.0.0.1   odmin.local``
+4. open ``odmin.local:10004``
+5. Follow the setup  
+    ``mysql-host: prod_odmin_mysql``
+6. Restarting the Docker container to reload the configurations 
 
 The different pages are available under the following port number:  
 

@@ -2,7 +2,8 @@
 import {
     existsSync,
     writeFileSync,
-    readFileSync
+    readFileSync,
+    mkdirSync
 } from "fs";
 import { join } from "path";
 
@@ -12,58 +13,62 @@ export default new class {
 
     defaultConfigPath: string = join(__dirname, "..", "data", "config.json")
 
-    constructor () {
+    constructor() {
+
+        if (!existsSync(join(__dirname, "..", "data"))) {
+            mkdirSync(join(__dirname, "..", "data"));
+        }
 
         if (!existsSync(this.defaultConfigPath)) {
             writeFileSync(this.defaultConfigPath, JSON.stringify({
                 "server": {
-                  "port": 3030
+                    "port": 3030
                 },
                 "runmode": "development", //  | production
-                "frontend-base-url": "http://localhost:1004",
+                "frontend-base-url": "http://localhost:10004",
                 "privacy": {
-                  "ip-addresses-pseudonymize": true,
-                  "ip-localization-service": "https://ipinfo.oproj.de/"
+                    "ip-addresses-pseudonymize": true,
+                    "ip-localization-service": "https://ipinfo.oproj.de/"
                 },
                 "dev": {
-                  "invitetoken": "token"
+                    "invitetoken": "token"
                 },
                 "email": {
-                  "account": "\"Name\" <info@email.de>"
+                    "account": "\"Name\" <info@email.de>"
                 },
                 "mysql": {
-                  "database": "",
-                  "user": "",
-                  "pass": "",
-                  "host": "",
-                  "port": 3306
+                    "database": "",
+                    "user": "",
+                    "pass": "",
+                    "host": "",
+                    "port": 10001
                 },
                 "smtp": {
-                  "host": "",
-                  "port": "",
-                  "secure": "",
-                  "user": "",
-                  "pass": ""
+                    "host": "",
+                    "port": "",
+                    "secure": "",
+                    "user": "",
+                    "pass": ""
                 }
             }, null, 4));
         }
 
         nconf.defaults(this.getSavedConfigs())
-        
+
     }
 
-    getSavedConfigs () {
+    getSavedConfigs() {
         return JSON.parse(
             readFileSync(this.defaultConfigPath).toString()
         )
     }
 
 
-    get (param: string) {
-        return  nconf.get(param);
+    get(param: string) {
+        return nconf.get(param);
     }
 
-    set (param: string, value: any) {
+    set(param: string, value: any) {
         nconf.set(param, value)
 
         let params = param.split(":");
@@ -73,11 +78,11 @@ export default new class {
         switch (params.length) {
             case 1: configs[params[0]] = value; break;
             case 2: configs[params[0]][params[1]] = value; break;
-        
+
         }
 
         writeFileSync(this.defaultConfigPath, JSON.stringify(configs, null, 4));
-        
+
         nconf.defaults(this.getSavedConfigs());
 
     }

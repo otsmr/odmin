@@ -28,7 +28,7 @@ import { signOutAlert } from './routes/shared';
 import { SocketWithData, SocketUser } from './utils/socket'
 
 const app = express();
-const port = config.get("server:port") || 8080;
+const port = config.get("server:port") || 3000;
 app.set('port', port);
 
 const server = createServer(app);
@@ -88,7 +88,12 @@ app.use(async (req, res, next) => {
         return next();
     }
 
-    res.redirect(config.get("frontend-base-url") + "/setup");
+    if (req.url.indexOf("/setup") === -1) {
+        res.redirect(config.get("frontend-base-url") + "/setup");
+    } else {
+        next();
+    }
+
 
 })
 

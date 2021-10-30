@@ -1,6 +1,6 @@
 __dirname="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-cp -n $__dirname/backend/src/config.sample.json $__dirname/build/config.json
+# cp -n $__dirname/backend/src/config.sample.json $__dirname/build/config.json
 mv $__dirname/build/config.json /tmp/config_729384792348.json
 
 mkdir $__dirname/build
@@ -39,6 +39,8 @@ cd $__dirname/frontend
 npm run build
 
 cd $__dirname
+
+cp $__dirname/production/* $__dirname/build
 
 mkdir $__dirname/build/public
 mv $__dirname/frontend/build/* $__dirname/build/public
